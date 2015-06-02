@@ -1,12 +1,15 @@
-/* T01FWIN.C
- * Пример базового макета программы под WinAPI.
- * Создание и поддержка простейшего окна.
- */
+/* FILE NAME: T02CLOCK
+*  PROGRAMMER: AO5
+*  DATE: 02.06.2015
+*  PURPOSE: WinAPI windowed application sample*/
 
 #include <windows.h>
+#include <math.h>
 
 /* Имя класса окна */
 #define WND_CLASS_NAME "My window class"
+
+#define Pi 3.14159265358979323846
 
 /* Ссылка вперед */
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
@@ -61,7 +64,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
       "Title",                      /* Заголовок окна */
       WS_OVERLAPPEDWINDOW,          /* Стили окна - окно общего вида */
       CW_USEDEFAULT, CW_USEDEFAULT, /* Позиция окна (x, y) - по умолчанию */
-      CW_USEDEFAULT, CW_USEDEFAULT, /* Размеры окна (w, h) - по умолчанию */
+      1000, 1000,                   /* Размеры окна (w, h) - по умолчанию */
       NULL,                         /* Дескриптор родительского окна */
       NULL,                         /* Дескриптор загруженного меню */
       hInstance,                    /* Дескриптор приложения */
@@ -91,55 +94,101 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (LRESULT) - в зависимости от сообщения.
  */
+VOID DrawArrow( HDC hDC, INT X1, INT Y1, INT Len, DOUBLE Angle )
+{
+  DOUBLE si = sin(Angle * Pi / 180), co = cos(Angle * Pi / 180);
+  MoveToEx(hDC, X1, Y1, NULL);
+  LineTo(hDC, X1 + Len * si, Y1 - Len * co);
+}
+
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam, LPARAM lParam )
-{
+{ 
+
+
   HDC hDC;
+  PAINTSTRUCT ps;
+  SYSTEMTIME st;
+
   static INT w, h;
-  POINT pt;
-  INT r, xs, ys;
+  static BITMAP bm;
+  static HDC hMemDC, hMemDCClock;
+  static HBITMAP hBm, hBmClock;
+
   switch (Msg)
   {
   case WM_CREATE:
-    SetTimer(hWnd, 111, 50, NULL);
+    SetTimer(hWnd, 1, 100, NULL);
+    hBmClock = LoadImage(NULL, "clock3.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    GetObject(hBmClock, sizeof(bm), &bm);
+
+    hDC = GetDC(hWnd);
+    hMemDC = CreateCompatibleDC(hDC);
+    hMemDCClock = CreateCompatibleDC(hDC);
+    ReleaseDC(hWnd, hDC);
+
+    SelectObject(hMemDCClock, hBmClock);
     return 0;
+
   case WM_SIZE:
     w = LOWORD(lParam);
     h = HIWORD(lParam);
-    return 0;
-  case WM_TIMER:
+
+    if(hBm != NULL)
+      DeleteObject(hBm);
+
     hDC = GetDC(hWnd);
-    GetCursorPos(&pt);
-    ScreenToClient(hWnd, &pt);
-    r = 30;
-    xs = 145 + h / 4;
-    ys = 5 + h / 4;
-    Ellipse(hDC, 150, 10, h / 2 + 140, h / 2);
-    //Ellipse(hDC, w - h / 2 - 140, 10, w - 10 - 140, h / 2);
-    
-    SetDCBrushColor(hDC, RGB(0, 0, 0));
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    //Ellipse(hDC, h / 4 - 10 - r, h / 4 - 10 + r, h / 4 - 10 + r, h / 4 - 10 - r);
-    //Ellipse(hDC, w - ((w - 10) - (w - h / 2)) / 2 - 10 - r, h / 4 - 10 + r, w - ((w - 10) - (w - h / 2)) / 2 - 10 + r, h / 4 - 10 - r);
-    Ellipse(hDC, h / 4 - r, h / 4 - r, h / 4 + r, h / 4 - r);
-
-    //k = r / sqrt(pt.x * pt.x + pt.y * pt.y * 1.0);
-    //(pt.y - r) < 10 ? ((T = 10), (B = 10 + 2 * r)) : ((pt.y + r) > (h / 2) ? ((B = h / 2), (T = h / 2 - 2 * r)) : ((T = pt.y - r), (B = pt.y + r)));
-    //(pt.x + r) > (h / 2) ? ((R = h / 2), (L = h / 2 - 2 * r)) : ((pt.x - r) < 10 ? ((L = 10), (R = 10 + 2 * r)) : ((R = pt.x + r), (L = pt.x - r)));  
-    
-    //Ellipse(hDC, h / 4 - 10 - r + pt.x * k, h / 4 - 10 + r + pt.y * k, h / 4 - 10 + r + pt.x * k, h / 4 - 10 - r + pt.y * k);
-
-    //(pt.x + r) > (w - 10) ? ((R = w - 10), (L = w - 10 - 2 * r)) : ((pt.x -  r) < (w - h / 2) ? ((L = (w - h / 2)), (R = w - h / 2 + 2 * r)) : ((R = pt.x + r), (L = pt.x - r)));
-    //Ellipse(hDC, L, T, R, B);
-
-
+    hBm = CreateCompatibleBitmap(hDC, w, h);
     ReleaseDC(hWnd, hDC);
+
+    SelectObject(hMemDC, hBm);
+    SendMessage(hWnd, WM_TIMER, 1, 0);
     return 0;
+  
+  case WM_TIMER:
+    //SelectObject(hMemDC, GetStockObject(NULL_PEN));
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(255, 255, 255));
+    Rectangle(hMemDC, 0, 0, w + 1, h + 1);
+
+    StretchBlt(hMemDC, 0, 0, w, h,
+      hMemDCClock, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+
+    GetLocalTime(&st);
+    DrawArrow(hMemDC, w / 2, h / 2, 450, st.wSecond * 6);
+    DrawArrow(hMemDC, w / 2, h / 2, 400, st.wMinute * 6);
+    DrawArrow(hMemDC, w / 2, h / 2, 300, (st.wHour % 12) * 30);
+
+    InvalidateRect(hWnd, NULL, TRUE);
+    return 0;
+
+  case WM_PAINT:
+    hDC = BeginPaint(hWnd, &ps);
+    BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
+    EndPaint(hWnd, &ps);
+    return 0;
+
+  case WM_ERASEBKGND:
+    BitBlt((HDC)wParam, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
+    return 0;
+
+  /*case WM_CLOSE:
+    if (MessageBox(hWnd, "Are you shure to exit from program?",
+          "Exit", MB_YESNO | MB_ICONQUESTION) == IDNO)
+      return 0;
+    break;  */
+  
   case WM_DESTROY:
-    KillTimer(hWnd, 111);
-    PostMessage(hWnd, WM_QUIT, 0, 0);
+    DeleteObject(hBm);
+    DeleteDC(hMemDC);
+    DeleteDC(hMemDCClock);
+    DeleteObject(hBmClock);
+    KillTimer(hWnd, 1);
+    PostQuitMessage(0);
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
 } /* End of 'MyWindowFunc' function */
-/* END OF 'T01FWIN.C' FILE */
+
+
+/* END OF 'T02CLOCK.C' FILE */
