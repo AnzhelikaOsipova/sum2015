@@ -101,6 +101,23 @@ VOID DrawArrow( HDC hDC, INT X1, INT Y1, INT Len, DOUBLE Angle )
   LineTo(hDC, X1 + Len * si, Y1 - Len * co);
 }
 
+VOID DrawHand(HDC hDC, INT Xc, INT Yc, INT L, INT W, FLOAT Angle)
+{
+  INT i;
+  POINT pnts[]=
+  {
+    {0, -W}, {-W, 0}, {0, L}, {W, 0}
+  };
+  POINT pntdraw[sizeof pnts / sizeof pnts[0]];
+  DOUBLE co = cos(Angle), si = sin(Angle);
+  for(i = 0; i < sizeof pnts / sizeof pnts[0]; i++)
+  {
+    pntdraw[i].x = Xc - pnts[i].x * co - pnts[i].y * si;
+    pntdraw[i].y = Yc - pnts[i].y * co + pnts[i].x * si;
+  }
+  Polygon(hDC, pntdraw, sizeof pnts / sizeof pnts[0]);
+}
+
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam, LPARAM lParam )
 { 
@@ -109,6 +126,8 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
   HDC hDC;
   PAINTSTRUCT ps;
   SYSTEMTIME st;
+  HFONT hFnt, hOldFnt;
+  CHAR Buf[100];
 
   static INT w, h;
   static BITMAP bm;
@@ -146,18 +165,39 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
     return 0;
   
   case WM_TIMER:
-    //SelectObject(hMemDC, GetStockObject(NULL_PEN));
+    
     SelectObject(hMemDC, GetStockObject(DC_BRUSH));
-    SetDCBrushColor(hMemDC, RGB(255, 255, 255));
+    SetDCBrushColor(hMemDC, RGB(0, 0, 0));
     Rectangle(hMemDC, 0, 0, w + 1, h + 1);
 
     StretchBlt(hMemDC, 0, 0, w, h,
       hMemDCClock, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
 
     GetLocalTime(&st);
-    DrawArrow(hMemDC, w / 2, h / 2, 450, st.wSecond * 6);
+    /*DrawArrow(hMemDC, w / 2, h / 2, 450, st.wSecond * 6);
     DrawArrow(hMemDC, w / 2, h / 2, 400, st.wMinute * 6);
     DrawArrow(hMemDC, w / 2, h / 2, 300, (st.wHour % 12) * 30);
+    */
+
+    DrawHand(hMemDC, w / 2, h / 2, 450, 10, 270 - st.wSecond * 6 * Pi / 180);
+    DrawHand(hMemDC, w / 2, h / 2, 400, 20, 270 - st.wMinute * 6 * Pi / 180);
+    DrawHand(hMemDC, w / 2, h / 2, 300, 25, 270 - (st.wHour % 12) * 6 * Pi / 180);
+
+    hFnt = CreateFont(50, 0, 0, 0, FW_BOLD, FALSE, FALSE,
+      FALSE, RUSSIAN_CHARSET, OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS, PROOF_QUALITY,
+      VARIABLE_PITCH | FF_ROMAN, "");
+    hOldFnt = SelectObject(hMemDC, hFnt);
+    
+
+    SetTextColor(hMemDC, RGB(255, 0, 0));
+    SetBkMode(hMemDC, TRANSPARENT);
+    TextOut(hMemDC, w / 4 + 30, h / 2, Buf,
+      sprintf(Buf, "%02d:%02d:%02d (%02d.%02d.%d)",
+        st.wHour, st.wMinute, st.wSecond,
+        st.wDay, st.wMonth, st.wYear));
+
+    DeleteObject(hFnt);
 
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;
