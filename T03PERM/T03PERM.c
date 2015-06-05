@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#define N 5
+#define N 3
 
 int P[N];
 int Par, save, x;
@@ -25,7 +25,7 @@ void Write(void)
   {                     
     for(i = 0; i < N; i++)
       fprintf(F, "%i", P[i]);
-    fprintf(F, " - %s\n", Par ? "odd" : "even");
+    fprintf(F, " - %s\n", !Par ? "odd" : "even");
     fclose(F);
   }
 }
@@ -40,7 +40,7 @@ void Go(int Pos)
   }
   else
   {
-    save = Par;
+    /*save = Par;
     Go(Pos + 1);
     for(i = Pos + 1; i < N; i++)
     {
@@ -52,7 +52,17 @@ void Go(int Pos)
     x = P[Pos];
     for(i = Pos + 1; i < N; i++)
       P[i - 1] = P[i];
-    P[N - 1] = x;
+    P[N - 1] = x;*/
+    for(i = Pos; i < N; i++)
+    {
+      if(Pos != i)
+        Par = !Par;
+      Swap(&P[Pos], &P[i]);
+      Go(Pos + 1);
+      if(Pos != i)
+        Par = !Par;
+      Swap(&P[Pos], &P[i]);
+    }
   }
 }
 
@@ -67,14 +77,3 @@ void main(void)
     P[i] = i + 1;
   Go(0);
 }
-/*
-for(i = Pos; i < N; i++)
-    {
-      if(Pos != i)
-        Par = !Par;
-      Swap(&P[Pos], &P[i]);
-      Go(Pos + 1);
-      if(Pos != i)
-        Par = !Par;
-      Swap(&P[Pos], &P[i]);
-    }*/
