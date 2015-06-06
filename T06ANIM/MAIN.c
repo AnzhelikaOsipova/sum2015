@@ -1,11 +1,12 @@
-/* T01FWIN.C
- * Пример базового макета программы под WinAPI.
- * Создание и поддержка простейшего окна.
- */
+/* FILE NAME: MAIN.c
+*  PROGRAMMER: AO5
+*  DATE: 06.06.2015
+*  PURPOSE: Animation drawing*/
 
 #include <windows.h>
+#include "vec.h"
+#include "obj.h"
 
-/* Имя класса окна */
 #define WND_CLASS_NAME "My window class"
 
 /* Ссылка вперед */
@@ -61,7 +62,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
       "Title",                      /* Заголовок окна */
       WS_OVERLAPPEDWINDOW,          /* Стили окна - окно общего вида */
       CW_USEDEFAULT, CW_USEDEFAULT, /* Позиция окна (x, y) - по умолчанию */
-      CW_USEDEFAULT, CW_USEDEFAULT, /* Размеры окна (w, h) - по умолчанию */
+      1000, 1000,                   /* Размеры окна (w, h) - по умолчанию */
       NULL,                         /* Дескриптор родительского окна */
       NULL,                         /* Дескриптор загруженного меню */
       hInstance,                    /* Дескриптор приложения */
@@ -91,85 +92,76 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (LRESULT) - в зависимости от сообщения.
  */
-#define sqr(X) ((X) * (X))
-
-VOID DrawEye( HWND hWnd, HDC hDC, INT W, INT H, INT Xc, INT Yc )
-{
-  POINT pt;
-  FLOAT
-    len = sqrt(sqr(Xc - W / 2) + sqr(Yc - H / 2)),
-    co = (Xc - W / 2) / len, si = (Yc - H / 2) / len;
-  INT l = 30, x, y;
-
-  GetCursorPos(&pt);
-  ScreenToClient(hWnd, &pt);
-
-  l = len;
-  if (l > W / 2 - W / 8)
-    l = W / 2 - W / 8;
-  x = W / 2 + co * l;
-  y = H / 2 + si * l;
-
-
-  SelectObject(hDC, GetStockObject(DC_PEN));
-  SelectObject(hDC, GetStockObject(DC_BRUSH));
-  SetDCPenColor(hDC, RGB(0, 0, 0));
-  SetDCBrushColor(hDC, RGB(255, 255, 255));
-  Ellipse(hDC, Xc - W / 2, Yc - H / 2, Xc + W / 2, Yc + H / 2);
-  //SetDCPenColor(hDC, RGB(0, 0, 0));
-  SetDCBrushColor(hDC, RGB(0, 0, 0));
-  Ellipse(hDC, x - W / 8, y - H / 8, x + W / 8, y + H / 8);
-
-} /* End of 'DrawEye' function */
-
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam, LPARAM lParam )
-{
+{ 
+
+
   HDC hDC;
+ 
   static INT w, h;
-  INT r, xs, ys;
+  static BITMAP bm;
+  static HDC hMemDC;
+  static HBITMAP hBm;
+
+  
   switch (Msg)
   {
   case WM_CREATE:
-    SetTimer(hWnd, 111, 50, NULL);
+    SetTimer(hWnd, 1, 100, NULL);
+    
+    hDC = GetDC(hWnd);
+    hMemDC = CreateCompatibleDC(hDC);
+    ReleaseDC(hWnd, hDC);
+
     return 0;
+
   case WM_SIZE:
     w = LOWORD(lParam);
     h = HIWORD(lParam);
-    return 0;
-  case WM_TIMER:
+
+    if(hBm != NULL)
+      DeleteObject(hBm);
+
     hDC = GetDC(hWnd);
-    DrawEye(hWnd, hDC, 100, 100, 150, 150);
-    //r = 30;
-    //xs = 145 + h / 4;
-    //ys = 5 + h / 4;
-    //Ellipse(hDC, 150, 10, h / 2 + 140, h / 2);
-    //Ellipse(hDC, w - h / 2 - 140, 10, w - 10 - 140, h / 2);
-    
-    //SetDCBrushColor(hDC, RGB(0, 0, 0));
-    //SelectObject(hDC, GetStockObject(DC_BRUSH));
-    //Ellipse(hDC, h / 4 - 10 - r, h / 4 - 10 + r, h / 4 - 10 + r, h / 4 - 10 - r);
-    //Ellipse(hDC, w - ((w - 10) - (w - h / 2)) / 2 - 10 - r, h / 4 - 10 + r, w - ((w - 10) - (w - h / 2)) / 2 - 10 + r, h / 4 - 10 - r);
-    //Ellipse(hDC, h / 4 - r, h / 4 - r, h / 4 + r, h / 4 - r);
-
-    //k = r / sqrt(pt.x * pt.x + pt.y * pt.y * 1.0);
-    //(pt.y - r) < 10 ? ((T = 10), (B = 10 + 2 * r)) : ((pt.y + r) > (h / 2) ? ((B = h / 2), (T = h / 2 - 2 * r)) : ((T = pt.y - r), (B = pt.y + r)));
-    //(pt.x + r) > (h / 2) ? ((R = h / 2), (L = h / 2 - 2 * r)) : ((pt.x - r) < 10 ? ((L = 10), (R = 10 + 2 * r)) : ((R = pt.x + r), (L = pt.x - r)));  
-    
-    //Ellipse(hDC, h / 4 - 10 - r + pt.x * k, h / 4 - 10 + r + pt.y * k, h / 4 - 10 + r + pt.x * k, h / 4 - 10 - r + pt.y * k);
-
-    //(pt.x + r) > (w - 10) ? ((R = w - 10), (L = w - 10 - 2 * r)) : ((pt.x -  r) < (w - h / 2) ? ((L = (w - h / 2)), (R = w - h / 2 + 2 * r)) : ((R = pt.x + r), (L = pt.x - r)));
-    //Ellipse(hDC, L, T, R, B);
-
-
+    hBm = CreateCompatibleBitmap(hDC, w, h);
     ReleaseDC(hWnd, hDC);
+
+    SelectObject(hMemDC, hBm);
+    SendMessage(hWnd, WM_TIMER, 1, 0);
     return 0;
+  
+  case WM_TIMER:
+    
+    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hMemDC, RGB(255, 255, 255));
+    Rectangle(hMemDC, 0, 0, w + 1, h + 1);  
+
+    if(ObjLoad("cow.object"))
+      ObjDraw(hMemDC);
+    
+    InvalidateRect(hWnd, NULL, TRUE);
+    return 0;
+
+  case WM_ERASEBKGND:
+    BitBlt((HDC)wParam, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
+    return 0;
+
+  /*case WM_CLOSE:
+    if (MessageBox(hWnd, "Are you shure to exit from program?",
+          "Exit", MB_YESNO | MB_ICONQUESTION) == IDNO)
+      return 0;
+    break;  */
+  
   case WM_DESTROY:
-    KillTimer(hWnd, 111);
-    PostMessage(hWnd, WM_QUIT, 0, 0);
+    DeleteObject(hBm);
+    DeleteDC(hMemDC);
+    KillTimer(hWnd, 1);
+    PostQuitMessage(0);
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
 } /* End of 'MyWindowFunc' function */
-/* END OF 'T01FWIN.C' FILE */
+
+/* End of 'Main.c' File */
