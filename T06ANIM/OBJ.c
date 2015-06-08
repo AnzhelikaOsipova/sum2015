@@ -26,8 +26,12 @@ VOID ObjDraw( HDC hDC )
   for (i = 0; i < ObjNumOfV; i++)
   {
     /* рисуем точку ObjV[i] */
-    //RotateX(ObjV[i], 30);
-    Ellipse(hDC, 300 + ObjV[i].X * 50 - 2, 300 - (ObjV[i].Y * 50 - 2), 300 +ObjV[i].X * 50 + 2, 300 -(ObjV[i].Y * 50 + 2));
+    ObjV[i].X *= 50;
+    ObjV[i].Y *= 50;
+    ObjV[i].Z *= 50;
+    //ObjV[i] = RotateX(ObjV[i], 30);
+    //ObjV[i] = RotateZ(ObjV[i], 30);
+    Ellipse(hDC, 300 + ObjV[i].X - 2, 300 - ObjV[i].Y + 2, 300 + ObjV[i].X + 2, 300 - ObjV[i].Y - 2);
   }
 
 } /* End of 'ObjDraw' function */

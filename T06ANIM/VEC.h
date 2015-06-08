@@ -14,6 +14,8 @@
 #define DEGREE2RADIANL 0.01745329251994329576L
 #define D2R(A) ((A) * PI / 180.0)
 
+static long double MultiplierDegree2Radian = DEGREE2RADIANL;
+
 /* базовый вещественный тип */
 typedef double DBL;
 
@@ -305,15 +307,51 @@ __inline VEC VectorTransform( VEC V, MATR M )
 
 }
 
-/*__inline VEC RotateX( VEC P, DOUBLE AngleDegree )
+__inline VEC RotateZ( VEC V, DBL AngleDegree )
 {
-  DOUBLE a = AngleDegree * PI / 180, si = sin(a), co = cos(a);
-  VEC r;
+  DBL sine, cosine, tmp;
+  _asm{
+    fld AngleDegree
+    fmul MultiplierDegree2Radian
+    fsincos
+    fstp cosine
+    fstp sine
+  }
+  tmp = V.X * cosine - V.Y * sine;
+  V.Y = V.X * sine + V.Y * cosine;
+  V.X = tmp;
+  return V;
+}
+__inline VEC RotateX( VEC V, DBL AngleDegree )
+{
+  DBL sine, cosine, tmp;
+  _asm{
+    fld AngleDegree
+    fmul MultiplierDegree2Radian
+    fsincos
+    fstp cosine
+    fstp sine
+  }
+  tmp = V.Y * sine + V.Z * cosine;
+  V.Y = V.Y * cosine - V.Z * sine;
+  V.Z = tmp; 
+  return V;
+}
 
-  r.X = P.X;
-  r.Y = P.Y * co - P.Z * si;
-  r.Z = P.Y * si + P.Z * co;
-  return r;
-} */
+__inline VEC RotateY( VEC V, DBL AngleDegree )
+{
+  DBL sine, cosine, tmp;
+  _asm{
+    fld AngleDegree
+    fmul MultiplierDegree2Radian
+    fsincos
+    fstp cosine
+    fstp sine
+  }
+  tmp = V.X * sine + V.Z * cosine;
+  V.X = V.X * cosine - V.Z * sine;
+  V.Z = tmp; 
+  return V;
+}
 
 #endif

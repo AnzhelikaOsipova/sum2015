@@ -187,9 +187,53 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OBJ.h"
+				>
+			</File>
+			<File
 				RelativePath=".\VEC.c"
 				>
 			</File>
+			<File
+				RelativePath=".\VEC.h"
+				>
+			</File>
+			<Filter
+				Name="Units"
+				>
+				<File
+					RelativePath=".\COW.c"
+					>
+				</File>
+				<File
+					RelativePath=".\UBALL.c"
+					>
+				</File>
+				<File
+					RelativePath=".\UBALL2.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Animation"
+				>
+				<File
+					RelativePath=".\ANIM.c"
+					>
+				</File>
+				<File
+					RelativePath=".\ANIM.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UNITS.c"
+					>
+				</File>
+				<File
+					RelativePath=".\UNITS.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -198,14 +242,6 @@
 			>
 			<File
 				RelativePath=".\DEF.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OBJ.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VEC.h"
 				>
 			</File>
 		</Filter>
