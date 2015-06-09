@@ -1,10 +1,21 @@
 /* FILENAME: ANIM.C
- * PROGRAMMER: VG4
+ * PROGRAMMER: AO5
  * PURPOSE: Animation system module.
  * LAST UPDATE: 08.06.2015
  */
 
 #include "anim.h"
+#include <mmsystem.h>
+#pragma comment(lib, "winmm")
+
+/* Получение значения оси джойстика */
+#define AO5_GET_AXIS_VALUE(Axis) \
+  (2.0 * (ji.dw ## Axis ## pos - jc.w ## Axis ## min) / (jc.w ## Axis ## max - jc.w ## Axis ## min) - 1.0)
+
+/* Сохраненные мышиные координаты */
+static INT
+  AO5_MouseOldX, AO5_MouseOldY;
+
 
 /* Системный контекст анимации */
 static ao5ANIM AO5_Anim;
@@ -28,7 +39,9 @@ VOID AO5_AnimInit( HWND hWnd )
 {
   HDC hDC = GetDC(hWnd);
   LARGE_INTEGER li;
-
+ POINT pt;
+  
+  memset(&AO5_Anim, 0, sizeof(ao5ANIM));
   AO5_Anim.hWnd = hWnd;
   /* Инициализируем буфер кадра */
   AO5_Anim.hDC = CreateCompatibleDC(hDC);
@@ -47,6 +60,14 @@ VOID AO5_AnimInit( HWND hWnd )
   TimeStart = TimeOld = TimeFPS = li.QuadPart;
   AO5_Anim.IsPause = FALSE;
   FrameCounter = 0;
+
+  /* Инициализация ввода */
+  GetCursorPos(&pt);
+  ScreenToClient(AO5_Anim.hWnd, &pt);
+  AO5_MouseOldX = pt.x;
+  AO5_MouseOldY = pt.y;
+  GetKeyboardState(AO5_Anim.KeysOld);
+
 } /* End of 'AO5_AnimInit' function */
 
 /* Функция деинициализации анимации.
@@ -100,11 +121,7 @@ VOID AO5_AnimRender( VOID )
 {
   INT i;
   LARGE_INTEGER li;
-
-  if (GetAsyncKeyState('P') & 0x8000)
-    AO5_AnimSetPause(TRUE);
-  if (GetAsyncKeyState('O') & 0x8000)
-    AO5_AnimSetPause(FALSE);
+  POINT pt;
   /* опрос на изменение состояний объектов */
   for (i = 0; i < AO5_Anim.NumOfUnits; i++)
     AO5_Anim.Units[i]->Response(AO5_Anim.Units[i], &AO5_Anim);
@@ -140,23 +157,88 @@ VOID AO5_AnimRender( VOID )
 
   AO5_Anim.Time = (DBL)(li.QuadPart - TimePause - TimeStart) / TimeFreq;
 
-  /* вычисляем FPS */
   if (li.QuadPart - TimeFPS > TimeFreq)
   {
     static CHAR Buf[100];
-
-    sprintf(Buf, "FPS: %.5f", AO5_Anim.FPS);
-    SetWindowText(AO5_Anim.hWnd, Buf);
 
     AO5_Anim.FPS = FrameCounter / ((DBL)(li.QuadPart - TimeFPS) / TimeFreq);
     TimeFPS = li.QuadPart;
     FrameCounter = 0;
   }
-
   /* время "прошлого" кадра */
   TimeOld = li.QuadPart;
 
   FrameCounter++;
+  /*** Обновление ввода ***/
+
+  /* Клавиатура */
+  GetKeyboardState(AO5_Anim.Keys);
+  for (i = 0; i < 256; i++)
+    AO5_Anim.Keys[i] >>= 7;
+  for (i = 0; i < 256; i++)
+    AO5_Anim.KeysClick[i] = AO5_Anim.Keys[i] && !AO5_Anim.KeysOld[i];
+  memcpy(AO5_Anim.KeysOld, AO5_Anim.Keys, sizeof(AO5_Anim.KeysOld));
+
+  /* Мышь */
+  /* колесо */
+  AO5_Anim.MsWheel = AO5_MouseWheel;
+  AO5_MouseWheel = 0;
+   /* абсолютная позиция */
+  GetCursorPos(&pt);
+  ScreenToClient(AO5_Anim.hWnd, &pt);
+  AO5_Anim.MsX = pt.x;
+  AO5_Anim.MsY = pt.y;
+  /* относительное перемещение */
+  AO5_Anim.MsDeltaX = pt.x - AO5_MouseOldX;
+  AO5_Anim.MsDeltaY = pt.y - AO5_MouseOldY;
+  AO5_MouseOldX = pt.x;
+  AO5_MouseOldY = pt.y;
+
+  /* Джойстик */
+  if ((i = joyGetNumDevs()) > 0)
+  {
+    JOYCAPS jc;
+
+    /* получение общей информации о джостике */
+    if (joyGetDevCaps(JOYSTICKID1, &jc, sizeof(jc)) == JOYERR_NOERROR)
+    {
+      JOYINFOEX ji;
+
+      /* получение текущего состояния */
+      ji.dwSize = sizeof(JOYCAPS);
+      ji.dwFlags = JOY_RETURNALL;
+      if (joyGetPosEx(JOYSTICKID1, &ji) == JOYERR_NOERROR)
+      {
+        /* Кнопки */
+        memcpy(AO5_Anim.JButsOld, AO5_Anim.JButs, sizeof(AO5_Anim.JButs));
+        for (i = 0; i < 32; i++)
+          AO5_Anim.JButs[i] = (ji.dwButtons >> i) & 1;
+        for (i = 0; i < 32; i++)
+          AO5_Anim.JButsClick[i] = AO5_Anim.JButs[i] && !AO5_Anim.JButsOld[i];
+
+        /* Оси */
+        AO5_Anim.JX = AO5_GET_AXIS_VALUE(X);
+        AO5_Anim.JY = AO5_GET_AXIS_VALUE(Y);
+        if (jc.wCaps & JOYCAPS_HASZ)
+          AO5_Anim.JZ = AO5_GET_AXIS_VALUE(Z);
+        if (jc.wCaps & JOYCAPS_HASU)
+          AO5_Anim.JU = AO5_GET_AXIS_VALUE(U);
+        if (jc.wCaps & JOYCAPS_HASV)
+          AO5_Anim.JV = AO5_GET_AXIS_VALUE(V);
+        if (jc.wCaps & JOYCAPS_HASR)
+          AO5_Anim.JR = AO5_GET_AXIS_VALUE(R);
+
+        if (jc.wCaps & JOYCAPS_HASPOV)
+        {
+          if (ji.dwPOV == 0xFFFF)
+            AO5_Anim.JPOV = 0;
+          else
+            AO5_Anim.JPOV = ji.dwPOV / 4500 + 1;
+        }
+      }
+    }
+  }
+
 } /* End of 'AO5_AnimRender' function */
 
 /* Функция вывода кадра анимации.
@@ -255,7 +337,7 @@ VOID AO5_AnimDoExit( VOID )
 VOID AO5_AnimSetPause( BOOL NewPauseFlag )
 {
   AO5_Anim.IsPause = NewPauseFlag;
-} /* End of 'VG4_AnimSetPause' function */
+} /* End of 'AO5_AnimSetPause' function */
 
 
 /* END OF 'ANIM.C' FILE */

@@ -12,6 +12,7 @@
 LRESULT CALLBACK MainWindowFunc( HWND hWnd, UINT Msg,
                                  WPARAM wParam, LPARAM lParam );
 
+INT AO5_MouseWheel;
 /* Главная функция программы.
  * АРГУМЕНТЫ:
  *   - дескриптор экземпляра приложения:
@@ -76,6 +77,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   for (i = 0; i < 300; i++)
     AO5_AnimAddUnit(AO5_UnitBallCreate());
   AO5_AnimAddUnit(AO5_UnitCowCreate());
+  AO5_AnimAddUnit(AO5_UnitControlCreate());
+
   /* Запуск цикла обработки сообщений */
   while (GetMessage(&msg, NULL, 0, 0))
   {
@@ -121,6 +124,9 @@ LRESULT CALLBACK MainWindowFunc( HWND hWnd, UINT Msg,
     AO5_AnimRender();
     AO5_AnimCopyFrame();
     return 0;
+  case WM_MOUSEWHEEL:
+    AO5_MouseWheel += (SHORT)HIWORD(wParam) / WHEEL_DELTA;
+    return 0;  
   case WM_ERASEBKGND:
     return 1;
   case WM_PAINT:

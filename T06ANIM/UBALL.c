@@ -1,5 +1,5 @@
 /* FILENAME: UBALL.C
- * PROGRAMMER: VG4
+ * PROGRAMMER: AO5
  * PURPOSE: Bounce ball unit handle module.
  * LAST UPDATE: 08.06.2015
  */
@@ -62,10 +62,9 @@ static VOID AO5_AnimUnitClose( ao5UNIT_BALL *Uni, ao5ANIM *Ani )
  */
 static VOID AO5_AnimUnitResponse( ao5UNIT_BALL *Uni, ao5ANIM *Ani )
 {
-  if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
-    AO5_AnimDoExit();
-  if (GetAsyncKeyState('F') & 0x8000)
-    AO5_AnimFlipFullScreen();
+  Uni->Amplitude *= 1.0 + Ani->MsWheel;
+  if(Uni->Amplitude == 0)
+    Uni->Amplitude = 5.0;
 } /* End of 'AO5_AnimUnitResponse' function */
 
 /* Функция построения объекта анимации.

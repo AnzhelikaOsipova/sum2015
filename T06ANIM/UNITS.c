@@ -1,5 +1,5 @@
 /* FILENAME: UNIT.C
- * PROGRAMMER: VG4
+ * PROGRAMMER: VAO5
  * PURPOSE: Animation unit handle module.
  * LAST UPDATE: 08.06.2015
  */

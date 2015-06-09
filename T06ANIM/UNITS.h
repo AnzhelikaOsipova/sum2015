@@ -1,5 +1,5 @@
 /* FILENAME: UNITS.H
- * PROGRAMMER: VG4
+ * PROGRAMMER: AO5
  * PURPOSE: Animation units samples declaration module.
  * LAST UPDATE: 08.06.2015
  */
@@ -18,6 +18,7 @@
 ao5UNIT * AO5_UnitBallCreate( VOID );
 ao5UNIT * AO5_UnitBallCreate2( VOID );
 ao5UNIT * AO5_UnitCowCreate( VOID );
+ao5UNIT * AO5_UnitControlCreate( VOID );
 
 #endif /* __UNITS_H_ */
 

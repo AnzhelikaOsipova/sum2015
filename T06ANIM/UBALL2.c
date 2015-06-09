@@ -1,6 +1,6 @@
 /* FILENAME: UBALL.C
- * PROGRAMMER: VG4
- * PURPOSE: Bounce ball unit handle module.
+ * PROGRAMMER: AO5
+ * PURPOSE: Reactangle unit handle module.
  * LAST UPDATE: 08.06.2015
  */
 
@@ -11,7 +11,7 @@
 #include "vec.h"
 
 /* Тип представления мяча */
-typedef struct tagao5UNIT_BALL22
+typedef struct tagao5UNIT_BALL2
 {
   AO5_UNIT_BASE_FIELDS;
 
@@ -62,10 +62,6 @@ static VOID AO5_AnimUnitClose( ao5UNIT_BALL2 *Uni, ao5ANIM *Ani )
  */
 static VOID AO5_AnimUnitResponse( ao5UNIT_BALL2 *Uni, ao5ANIM *Ani )
 {
-  if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
-    AO5_AnimDoExit();
-  if (GetAsyncKeyState('F') & 0x8000)
-    AO5_AnimFlipFullScreen();
 } /* End of 'AO5_AnimUnitResponse' function */
 
 /* Функция построения объекта анимации.
@@ -82,7 +78,6 @@ static VOID AO5_AnimUnitRender( ao5UNIT_BALL2 *Uni, ao5ANIM *Ani )
   
   SetDCBrushColor(Ani->hDC, Uni->Color);
   Rectangle(Ani->hDC, Uni->Pos.X - 10 - shift, Uni->Pos.Y - 5 + shift, Uni->Pos.X + 10 + shift, Uni->Pos.Y + 5 - shift);
-  //Ellipse(Ani->hDC, Uni->Pos.X - 10 + shift, Uni->Pos.Y - 5 - shift, Uni->Pos.X + 10 + shift, Uni->Pos.Y + 5 - shift);
 } /* End of 'AO5_AnimUnitRender' function */
 
 /* Функция создания объекта анимации "мяч".

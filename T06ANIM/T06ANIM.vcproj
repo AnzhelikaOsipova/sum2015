@@ -202,15 +202,19 @@
 				Name="Units"
 				>
 				<File
-					RelativePath=".\COW.c"
-					>
-				</File>
-				<File
 					RelativePath=".\UBALL.c"
 					>
 				</File>
 				<File
 					RelativePath=".\UBALL2.c"
+					>
+				</File>
+				<File
+					RelativePath=".\UCONTROL.c"
+					>
+				</File>
+				<File
+					RelativePath=".\UCOW.c"
 					>
 				</File>
 			</Filter>
@@ -233,6 +237,18 @@
 					RelativePath=".\UNITS.h"
 					>
 				</File>
+				<Filter
+					Name="Rendering"
+					>
+					<File
+						RelativePath=".\RENDER.c"
+						>
+					</File>
+					<File
+						RelativePath=".\RENDER.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
