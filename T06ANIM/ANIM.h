@@ -54,7 +54,8 @@ typedef struct
     JX, JY, JZ, JR, JU, JV; /* Оси джойстика (-1.0 .. 1.0)*/
 
 } ao5ANIM;
-
+/* Системный контекст анимации */
+extern ao5ANIM AO5_Anim;
 extern INT AO5_MouseWheel;
 /* Базовые поля объекта анимации:
  * - размер структуры для наследования

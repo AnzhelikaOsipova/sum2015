@@ -21,6 +21,7 @@ typedef struct tagao5GOBJ
 /* Матрицы */
 extern MATR
   AO5_RndMatrWorld,
+  AO5_RndMatrProj,
   AO5_RndMatrView;
 
 /* Параметры проецирования */

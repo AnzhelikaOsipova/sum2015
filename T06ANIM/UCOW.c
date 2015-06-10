@@ -11,23 +11,20 @@
 
 
 #include "anim.h"
-#include "vec.h"
+#include "render.h"
 
 /* Тип представления мяча */
-typedef struct tagao5UNIT_COW
+typedef struct tagao5UNIT_MODEL
 {
   AO5_UNIT_BASE_FIELDS;
+  ao5GOBJ Model;
 
-  VEC *ObjV; /* Vertex coordinates */
-  INT ObjNumOfV; /* Number of model vertices */
-  INT X, Y;
-
-} ao5UNIT_COW;
+} ao5UNIT_MODEL;
 
 /* Функция инициализации объекта анимации.
  * АРГУМЕНТЫ:
  *   - указатель на "себя" - сам объект анимации:
- *       ao5UNIT_COW *Uni;
+ *       ao5UNIT_MODEL *Uni;
  *   - указатель на контекст анимации:
  *       ao5ANIM *Ani;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
@@ -43,70 +40,35 @@ typedef struct tagao5UNIT_COW
 
 /* END OF 'LOADOBJ.C' FILE */
 
-static VOID AO5_AnimUnitInit( ao5UNIT_COW *Uni, ao5ANIM *Ani )
+static VOID AO5_AnimUnitInit( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
 {
-  FILE *F;
-  INT nv = 0;
-  static CHAR Buf[10000];
-
-  /* Open file */
-  if ((F = fopen("cow.object", "r")) == NULL)
-     return;
-  /* Count vertices */
-  while (fgets(Buf, sizeof(Buf), F) != NULL)
-  {
-    if (Buf[0] == 'v' && Buf[1] == ' ')
-      nv++;
-  }
-
-  /* Allocate memory for data */
-  if ((Uni->ObjV = malloc(sizeof(VEC) * nv)) == NULL)
-  {
-    fclose(F);
-  }
-
-  /* Read vertices */
-  rewind(F);
-  nv = 0;
-  while (fgets(Buf, sizeof(Buf), F) != NULL)
-  {
-    if (Buf[0] == 'v' && Buf[1] == ' ')
-    {
-      sscanf(Buf + 2, "%lf%lf%lf",
-        &Uni->ObjV[nv].X, &Uni->ObjV[nv].Y, &Uni->ObjV[nv].Z);        
-      nv++;
-    }
-  }
-
-  fclose(F);
-  Uni->ObjNumOfV = nv;
-  Uni->X = 300;
-  Uni->Y = 300;
+  AO5_RndGObjLoad( &Uni->Model, "cow.object" );
 } /* End of 'AO5_AnimUnitInit' function */
 
 /* Функция деинициализации объекта анимации.
  * АРГУМЕНТЫ:
  *   - указатель на "себя" - сам объект анимации:
- *       ao5UNIT_COW *Uni;
+ *       ao5UNIT_MODEL *Uni;
  *   - указатель на контекст анимации:
  *       ao5ANIM *Ani;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-static VOID AO5_AnimUnitClose( ao5UNIT_COW *Uni, ao5ANIM *Ani )
+static VOID AO5_AnimUnitClose( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
 {
+  AO5_RndGObjFree( &Uni->Model );
 } /* End of 'AO5_AnimUnitClose' function */
 
 /* Функция обновления межкадровых параметров объекта анимации.
  * АРГУМЕНТЫ:
  *   - указатель на "себя" - сам объект анимации:
- *       ao5UNIT_COW *Uni;
+ *       ao5UNIT_MODEL *Uni;
  *   - указатель на контекст анимации:
  *       ao5ANIM *Ani;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-static VOID AO5_AnimUnitResponse( ao5UNIT_COW *Uni, ao5ANIM *Ani )
+static VOID AO5_AnimUnitResponse( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
 {
-  INT i;
+  /*INT i;
   if(Ani->JPOV == 1 || Ani->Keys['W'] == 1)
     Uni->Y -= 10;
   if(Ani->JPOV == 3 || Ani->Keys['D'] == 1)
@@ -114,8 +76,8 @@ static VOID AO5_AnimUnitResponse( ao5UNIT_COW *Uni, ao5ANIM *Ani )
   if(Ani->JPOV == 5 || Ani->Keys['S'] == 1)
     Uni->Y += 10;
   if(Ani->JPOV == 7 || Ani->Keys['A'] == 1)
-    Uni->X -= 10;
-
+    Uni->X -= 10;*/
+  /*
   if(Ani->JZ == 1 || Ani->Keys['1'])
     for(i = 0; i < Uni->ObjNumOfV; i++)
       Uni->ObjV[i] = RotateX(Uni->ObjV[i], -1);
@@ -133,42 +95,43 @@ static VOID AO5_AnimUnitResponse( ao5UNIT_COW *Uni, ao5ANIM *Ani )
       Uni->ObjV[i] = RotateZ(Uni->ObjV[i], -1);
   if(Ani->JY == -1 || Ani->Keys['6'])
     for(i = 0; i < Uni->ObjNumOfV; i++)
-      Uni->ObjV[i] = RotateZ(Uni->ObjV[i], 1);
+      Uni->ObjV[i] = RotateZ(Uni->ObjV[i], 1);  */
   
 } /* End of 'AO5_AnimUnitResponse' function */
 
 /* Функция построения объекта анимации.
  * АРГУМЕНТЫ:
  *   - указатель на "себя" - сам объект анимации:
- *       ao5UNIT_COW *Uni;
+ *       ao5UNIT_MODEL *Uni;
  *   - указатель на контекст анимации:
  *       ao5ANIM *Ani;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-static VOID AO5_AnimUnitRender( ao5UNIT_COW *Uni, ao5ANIM *Ani )
+static VOID AO5_AnimUnitRender( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
 {
-  int i;
   SetDCBrushColor(Ani->hDC, RGB(255, 255, 255));
 
-  for (i = 0; i < Uni->ObjNumOfV; i++)
-  {
-    /* рисуем точку ObjV[i] */
-    //Ellipse(Ani->hDC, Ani->MsX + Uni->ObjV[i].X * 50 - 2, Ani->MsY - Uni->ObjV[i].Y * 50 + 2, Ani->MsX + Uni->ObjV[i].X * 50 + 2, Ani->MsY - Uni->ObjV[i].Y * 50 - 2);
-   Ellipse(Ani->hDC, Uni->X + Uni->ObjV[i].X * 50 - 2, Uni->Y - Uni->ObjV[i].Y * 50 + 2, Uni->X + Uni->ObjV[i].X * 50 + 2, Uni->Y - Uni->ObjV[i].Y * 50 - 2);
-  }
-
+  AO5_RndMatrView = MatrView(VecSet(30, 30, 30),
+                             VecSet(0, 0, 0),
+                             VecSet(0, 1, 0));
+  AO5_RndMatrWorld = 
+    MatrMulMatr(MatrMulMatr(MatrMulMatr(MatrTranslate(Ani->JX * 59, Ani->JY * 88, 0), MatrScale(1, 1, 1)),
+    MatrRotateY(30 * Ani->Time + Ani->JR * 180)),
+    MatrTranslate(0, 0, 100 * Ani->JZ));
+  //AO5_RndMatrProj = MatrFrustum(AO5_RndWp / 2, AO5_RndWp / 2, AO5_RndHp / 2, AO5_RndHp / 2, AO5_RndProjDist, 800);
+  AO5_RndGObjDraw(&Uni->Model);
 } /* End of 'AO5_AnimUnitRender' function */
 
-/* Функция создания объекта анимации "мяч".
+/* Функция создания объекта анимации "модель".
  * АРГУМЕНТЫ: Нет.
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (ao5UNIT *) указатель на созданный объект анимации.
  */
 ao5UNIT * AO5_UnitCowCreate( VOID )
 {
-  ao5UNIT_COW *Uni;
+  ao5UNIT_MODEL *Uni;
 
-  if ((Uni = (VOID *)AO5_AnimUnitCreate(sizeof(ao5UNIT_COW))) == NULL)
+  if ((Uni = (VOID *)AO5_AnimUnitCreate(sizeof(ao5UNIT_MODEL))) == NULL)
     return NULL;
   /* заполняем поля */
   Uni->Init = (VOID *)AO5_AnimUnitInit;

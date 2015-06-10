@@ -5,6 +5,7 @@
  */
 
 #include "anim.h"
+#include "render.h"
 #include <mmsystem.h>
 #pragma comment(lib, "winmm")
 
@@ -15,10 +16,8 @@
 /* Сохраненные мышиные координаты */
 static INT
   AO5_MouseOldX, AO5_MouseOldY;
-
-
 /* Системный контекст анимации */
-static ao5ANIM AO5_Anim;
+ao5ANIM AO5_Anim;
 /* Данные для синхронизации по времени */
 static INT64
   TimeFreq,  /* единиц измерения в секунду */
@@ -110,6 +109,13 @@ VOID AO5_AnimResize( INT W, INT H )
   AO5_Anim.W = W;
   AO5_Anim.H = H;
 
+  if(W > H)
+    AO5_RndWp = (DBL)W / H * 3, AO5_RndHp = 3;
+  else
+    AO5_RndHp = (DBL)H / W * 3, AO5_RndWp = 3;
+
+  AO5_RndMatrProj = MatrFrustum(-AO5_RndWp / 2, AO5_RndWp / 2, -AO5_RndHp / 2, AO5_RndHp / 2, AO5_RndProjDist, 800);
+  
   ReleaseDC(AO5_Anim.hWnd, hDC);
 } /* End of 'AO5_AnimResize' function */
 
@@ -122,9 +128,6 @@ VOID AO5_AnimRender( VOID )
   INT i;
   LARGE_INTEGER li;
   POINT pt;
-  /* опрос на изменение состояний объектов */
-  for (i = 0; i < AO5_Anim.NumOfUnits; i++)
-    AO5_Anim.Units[i]->Response(AO5_Anim.Units[i], &AO5_Anim);
 
   /* очистка фона */
   SelectObject(AO5_Anim.hDC, GetStockObject(DC_BRUSH));
@@ -238,6 +241,9 @@ VOID AO5_AnimRender( VOID )
       }
     }
   }
+  /* опрос на изменение состояний объектов */
+  for (i = 0; i < AO5_Anim.NumOfUnits; i++)
+    AO5_Anim.Units[i]->Response(AO5_Anim.Units[i], &AO5_Anim);
 
 } /* End of 'AO5_AnimRender' function */
 

@@ -14,7 +14,8 @@
 MATR
   AO5_RndMatrWorld = AO5_UNIT_MATR,
   AO5_RndMatrView = AO5_UNIT_MATR,
-  AO5_RndMatrWorldView = AO5_UNIT_MATR;
+  AO5_RndMatrProj = AO5_UNIT_MATR,
+  AO5_RndMatrWorldViewProj = AO5_UNIT_MATR;
 
 /* Параметры проецирования */
 DBL
@@ -34,13 +35,13 @@ POINT AO5_RndWorldToScreen( VEC P )
   VEC Pp;
 
   /* преобразование СК */
-  P = VecMulMatr(P, AO5_RndMatrWorldView);
+  Pp = PointTransform(P, AO5_RndMatrWorldViewProj);
 
-  Pp.X = P.X * AO5_RndProjDist / P.Z;
-  Pp.Y = P.Y * AO5_RndProjDist / P.Z;
+  //Pp.X = P.X * AO5_RndProjDist / -P.Z;
+  //Pp.Y = P.Y * AO5_RndProjDist / -P.Z;
 
-  Ps.x = AO5_Anim.W / 2 + Pp.X * AO5_Anim.W / AO5_RndWp;
-  Ps.y = AO5_Anim.H / 2 - Pp.Y * AO5_Anim.H / AO5_RndHp;
+  Ps.x = (Pp.X + 0.5) * AO5_Anim.W;
+  Ps.y = (-Pp.Y + 0.5) * AO5_Anim.H;
 
   return Ps;
 } /* End of 'AO5_RndWorldToScreen' function */
@@ -61,7 +62,7 @@ BOOL AO5_RndGObjLoad( ao5GOBJ *GObj, CHAR *FileName )
   INT nv = 0, nf = 0;
   static CHAR Buf[10000];
 
-  memset(GObj, 0, sizeof(AO5GOBJ));
+  memset(GObj, 0, sizeof(ao5GOBJ));
   /* Open file */
   if ((F = fopen(FileName, "r")) == NULL)
     return FALSE;
@@ -120,10 +121,10 @@ BOOL AO5_RndGObjLoad( ao5GOBJ *GObj, CHAR *FileName )
 /* Функция отрисовки геометрического объекта.
  * АРГУМЕНТЫ:
  *   - структура объекта для загрузки:
- *       AO5GOBJ *GObj;
+ *       ao5GOBJ *GObj;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AO5_RndGObjDraw( AO5GOBJ *GObj )
+VOID AO5_RndGObjDraw( ao5GOBJ *GObj )
 {
   INT i;
   POINT *pnts;
@@ -132,7 +133,8 @@ VOID AO5_RndGObjDraw( AO5GOBJ *GObj )
     return;
 
   /* проецируем все точки */
-  AO5_RndMatrWorldView = MatrMulMatr(AO5_RndMatrWorld, AO5_RndMatrView);
+  AO5_RndMatrWorldViewProj =  MatrMulMatr(MatrMulMatr(AO5_RndMatrWorld, AO5_RndMatrView), AO5_RndMatrProj);
+  SelectObject(AO5_Anim.hDC, GetStockObject(WHITE_PEN));
   for (i = 0; i < GObj->NumOfV; i++)
     pnts[i] = AO5_RndWorldToScreen(GObj->V[i]);
 
@@ -159,10 +161,10 @@ VOID AO5_RndGObjDraw( AO5GOBJ *GObj )
  *       ao5GOBJ *GObj;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AO5_RndGObjFree( AO5GOBJ *GObj )
+VOID AO5_RndGObjFree( ao5GOBJ *GObj )
 {
   free(GObj->V);
-  memset(GObj, 0, sizeof(AO5GOBJ));
+  memset(GObj, 0, sizeof(ao5GOBJ));
 } /* End of 'AO5_RndGObjFree' function */
 
 /* END OF 'RENDER.C' FILE */
