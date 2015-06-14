@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{17a7df91-dee2-4cbd-8846-af68829dd929}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Support">
+      <UniqueIdentifier>{ce81d2d8-04a7-401d-838a-8a6d366be262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Rendering">
+      <UniqueIdentifier>{064c71db-4cdc-458a-ae21-c0f18b4d1819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Shaders">
+      <UniqueIdentifier>{32246595-e7cc-4110-a9c5-a0f01c36586a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation\Support Elements">
+      <UniqueIdentifier>{76d638fa-6f68-419b-a8a5-9c1aaaf99591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Units">
+      <UniqueIdentifier>{a5cc8fe3-41d1-408d-b7b1-194bee80ccf5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IMAGE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MAIN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VEC.C">
+      <Filter>Source Files\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="ANIM.C">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="RENDER.C">
+      <Filter>Source Files\Animation\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="SHADERS.C">
+      <Filter>Source Files\Animation\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GEOM.C">
+      <Filter>Source Files\Animation\Support Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="PRIM.C">
+      <Filter>Source Files\Animation\Support Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="UNIT.C">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="UMODEL.C">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="UCONTRL.C">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IMAGE.H">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VEC.H">
+      <Filter>Source Files\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="ANIM.H">
+      <Filter>Source Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="RENDER.H">
+      <Filter>Source Files\Animation\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="UNITS.H">
+      <Filter>Source Files\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="DEF.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
