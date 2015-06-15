@@ -1,4 +1,12 @@
-/* FILE NAME: VEC.c
-*  PROGRAMMER: AO5
-*  DATE: 06.06.2015
-*  PURPOSE: Animation drawing*/
+/* FILENAME: VEC.C
+ * PROGRAMMER: VG4
+ * PURPOSE: 3D math handle module.
+ * LAST UPDATE: 06.06.2015
+ */
+
+#include "vec.h"
+
+/* ћножитель дл€ преобразовани€ градусов в радианы */
+LDBL AO5_MultiplierDegree2Radian = DEGREE2RADIANL;
+
+/* END OF 'VEC.C' FILE */

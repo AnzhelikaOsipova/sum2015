@@ -12,9 +12,9 @@
 /* Функция добавления примитива к геометрическому объекту.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  *   - указатель на добавляемый примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (INT) номер добавленного примитива в массиве (-1 при ошибке).
  */
@@ -43,7 +43,7 @@ INT AO5_GeomAddPrim( ao5GEOM *G, ao5PRIM *Prim )
 /* Функция освобождения геометрического объекта.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_GeomFree( ao5GEOM *G )
@@ -62,28 +62,51 @@ VOID AO5_GeomFree( ao5GEOM *G )
 /* Функция отображения геометрического объекта.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_GeomDraw( ao5GEOM *G )
 {
   INT i, loc;
 
+  /* посылаем количество частей */
+  glUseProgram(AO5_RndProg);
+  loc = glGetUniformLocation(AO5_RndProg, "TotalParts");
+  if (loc != -1)
+    glUniform1f(loc, G->NumOfPrimitives);
+  glUseProgram(0);
+
+  /* рисуем непрозрачные объекты */
   for (i = 0; i < G->NumOfPrimitives; i++)
-  {
-    glUseProgram(AO5_RndProg);
-    loc = glGetUniformLocation(AO5_RndProg, "PartNo");
-    if (loc != -1)
-      glUniform1f(loc, i);
-    glUseProgram(0);
-    AO5_PrimDraw(&G->Prims[i]);
-  }
+    if (AO5_MtlLib[G->Prims[i].MtlNo].Kt == 1)
+    {
+      /* посылаем номер текущей части */
+      glUseProgram(AO5_RndProg);
+      loc = glGetUniformLocation(AO5_RndProg, "PartNo");
+      if (loc != -1)
+        glUniform1f(loc, i);
+      glUseProgram(0);
+      AO5_PrimDraw(&G->Prims[i]);
+    }
+
+  /* рисуем прозрачные объекты */
+  for (i = 0; i < G->NumOfPrimitives; i++)
+    if (AO5_MtlLib[G->Prims[i].MtlNo].Kt != 1)
+    {
+      /* посылаем номер текущей части */
+      glUseProgram(AO5_RndProg);
+      loc = glGetUniformLocation(AO5_RndProg, "PartNo");
+      if (loc != -1)
+        glUniform1f(loc, i);
+      glUseProgram(0);
+      AO5_PrimDraw(&G->Prims[i]);
+    }
 } /* End of 'AO5_GeomDraw' function */
 
 /* Функция загрузки геометрического объекта из G3D файла.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  *   - имя файла:
  *       CHAR *FileName;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
@@ -96,6 +119,14 @@ BOOL AO5_GeomLoad( ao5GEOM *G, CHAR *FileName )
   CHAR Sign[4];
   MATR M;
   static CHAR MtlName[300];
+  static CHAR
+    path_buffer[_MAX_PATH],
+    drive[_MAX_DRIVE],
+    dir[_MAX_DIR],
+    fname[_MAX_FNAME],
+    ext[_MAX_EXT];
+
+  _splitpath(FileName, drive, dir, fname, ext);
 
   memset(G, 0, sizeof(ao5GEOM));
   if ((F = fopen(FileName, "rb")) == NULL)
@@ -115,12 +146,16 @@ BOOL AO5_GeomLoad( ao5GEOM *G, CHAR *FileName )
   fread(&n, 4, 1, F);
   fread(MtlName, 1, 300, F);
 
+  /* читаем и загружаем библиотеку материалов */
+  _makepath(path_buffer, drive, dir, MtlName, "");
+  AO5_MtlLoad(path_buffer);
+
   /* читаем примитивы */
   for (i = 0; i < n; i++)
   {
     INT nv, ni, *Ind;
-    AO5VERTEX *Vert;
-    AO5PRIM P;
+    ao5VERTEX *Vert;
+    ao5PRIM P;
 
     /* читаем количество вершин и индексов */
     fread(&nv, 4, 1, F);
@@ -138,13 +173,14 @@ BOOL AO5_GeomLoad( ao5GEOM *G, CHAR *FileName )
     /* конвертируем геометрию */
     for (j = 0; j < nv; j++)
     {
-      Vert[j].P = VecMulMatr(Vert[j].P, AO5_RndPrimMatrConvert);
-      Vert[j].N = VecMulMatr3(Vert[j].N, M);
+      Vert[j].P = PointTransform(Vert[j].P, AO5_RndPrimMatrConvert);
+      Vert[j].N = VectorTransform(Vert[j].N, M);
     }
     fread(Ind, sizeof(INT), ni, F);
 
     /* заносим в примитив */
     AO5_PrimCreate(&P, AO5_PRIM_TRIMESH, nv, ni, Vert, Ind);
+    P.MtlNo = AO5_MtlFind(MtlName);
 
     free(Vert);
 

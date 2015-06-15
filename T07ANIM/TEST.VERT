@@ -1,7 +1,7 @@
 /* Filename: TEST.VERT */
 
 // версия языка шейдера
-#version 330
+#version 400
 
 // кто куда приходит
 layout(location = 0) in vec3 InPosition;
@@ -16,6 +16,7 @@ uniform mat4 MatrProj;
 uniform mat4 MatrWVP;
 uniform mat4 MatrWV;
 uniform mat4 MatrWVInverse;
+uniform mat4 MatrWInverse;
 uniform float Time;
 
 // выходные параметры
@@ -26,12 +27,30 @@ out vec2 DrawTexCoord;
 
 void main( void )
 {
-  //gl_Position = MatrProj * MatrView * MatrWorld * vec4(InPosition, 1);
-  gl_Position = MatrWVP * vec4(InPosition * 5.50, 1);
-  //gl_Position = vec4(InPosition, 1);
-  DrawNormal = mat3(MatrWVInverse) * InNormal;
-  //gl_Position = vec4(0.3, 0, 0.3, 1);
+  gl_Position = MatrWVP * vec4(InPosition * 7, 1);
+  DrawNormal = mat3(MatrWInverse) * InNormal;
+  DrawPosition = vec3(MatrWorld * vec4(InPosition, 1));
   DrawColor = InColor;
-  DrawPosition = mat3(MatrWV) * InPosition;
   DrawTexCoord = InTexCoord;
 }
+/*
+  DrawColor = vec4(1, 1, 1, 1);
+  if(PartNo == 132)
+    DrawColor = vec4(0.5, 0.25, 0.23, 1);
+  if(PartNo < 89 || PartNo == 73)
+    DrawColor = vec4(0.5, 0.25, 0.23, 1);
+  if(PartNo >= 89)
+    if(PartNo < 101)
+      DrawColor = vec4(0, 0, 0, 1);
+  if(PartNo == 157 || PartNo == 159 || PartNo == 185 || PartNo == 187 ||
+     PartNo >= 190 && PartNo <= 231)
+      DrawColor = vec4(0, 0, 0, 1);
+  if(PartNo <= 44 )
+    DrawColor = vec4(0.9, 0.7, 0.2, 1);
+  if(PartNo == 189 )
+    DrawColor = vec4(1, 0, 0, 1);
+  if(PartNo == 190 || PartNo == 193 || PartNo == 196 || PartNo == 199 ||
+     PartNo == 202 || PartNo == 205 || PartNo == 208 || PartNo == 211 ||
+     PartNo == 214 || PartNo == 217 || PartNo == 220 || PartNo == 223 ||
+     PartNo == 226 || PartNo == 229)
+       DrawColor = vec4(0.6, 0.3, 0.3, 1); */

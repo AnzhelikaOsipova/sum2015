@@ -1,8 +1,8 @@
-/* FILE NAME: DEF.h
-*  PROGRAMMER: AO5
-*  DATE: 05.06.2015
-*  PURPOSE: WinAPI windowed application sample*/
-
+/* FILENAME: DEF.H
+ * PROGRAMMER: AO5
+ * PURPOSE: Default definitions.
+ * LAST UPDATE: 06.06.2015
+ */
 
 #ifndef __DEF_H_
 #define __DEF_H_
@@ -11,11 +11,11 @@
 
 #include <windows.h>
 
-/* Large integer типы */
+/* Large integer types */
 typedef __int64 INT64;
 typedef unsigned __int64 UINT64;
 
-/* Общие float-point типы */
+/* Common purpose float-point data type */
 typedef float FLT;
 typedef double DBL;
 typedef long double LDBL;

@@ -1,7 +1,8 @@
-/* FILE NAME: MAIN.c
-*  PROGRAMMER: AO5
-*  DATE: 06.06.2015
-*  PURPOSE: Animation drawing*/
+/* FILENAME: MAIN.C
+ * PROGRAMMER: AO5
+ * PURPOSE: Animation startup module
+ * LAST UPDATE: 10.06.2015
+ */
 
 #include "anim.h"
 #include "units.h"
@@ -12,7 +13,9 @@
 LRESULT CALLBACK MainWindowFunc( HWND hWnd, UINT Msg,
                                  WPARAM wParam, LPARAM lParam );
 
+/* Глобальная переменная - счетчик прокрутки колеса мыши */
 INT AO5_MouseWheel;
+
 /* Главная функция программы.
  * АРГУМЕНТЫ:
  *   - дескриптор экземпляра приложения:
@@ -73,8 +76,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   UpdateWindow(hWnd);
 
   /*** Добавление объектов ***/
-/*  for (i = 0; i < 300; i++)
-    AO5_AnimAddUnit(AO5_UnitBallCreate());*/
   AO5_AnimAddUnit(AO5_UnitModelCreate());
   AO5_AnimAddUnit(AO5_UnitControlCreate());
 
@@ -143,4 +144,4 @@ LRESULT CALLBACK MainWindowFunc( HWND hWnd, UINT Msg,
   return DefWindowProc(hWnd, Msg, wParam, lParam);
 } /* End of 'MainWindowFunc' function */
 
-/* END OF 'STARTUP.C' FILE */
+/* END OF 'MAIN.C' FILE */

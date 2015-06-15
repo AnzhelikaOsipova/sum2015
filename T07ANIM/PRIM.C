@@ -13,13 +13,13 @@ MATR AO5_RndPrimMatrConvert = AO5_UNIT_MATR;
 /* Функция создания примитива.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  *   - тип примитива (AO5_PRIM_***):
- *       AO5PRIM_TYPE Type;
+ *       ao5PRIM_TYPE Type;
  *   - количество вершин и индексов:
  *       INT NoofV, NoofI;
  *   - массив вершин:
- *       AO5VERTEX *Vertices;
+ *       ao5VERTEX *Vertices;
  *   - массив индексов:
  *       INT *Indices;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
@@ -71,7 +71,7 @@ VOID AO5_PrimCreate( ao5PRIM *Prim, ao5PRIM_TYPE Type,
 /* Функция удаления примитива.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_PrimFree( ao5PRIM *Prim )
@@ -93,7 +93,7 @@ VOID AO5_PrimFree( ao5PRIM *Prim )
 /* Функция отрисовки примитива.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_PrimDraw( ao5PRIM *Prim )
@@ -128,6 +128,11 @@ VOID AO5_PrimDraw( ao5PRIM *Prim )
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, M.A[0]);
 
+  M = MatrTranspose(MatrInverse(AO5_RndMatrWorld));
+  loc = glGetUniformLocation(AO5_RndProg, "MatrWInverse");
+  if (loc != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, M.A[0]);
+
   M = MatrMulMatr(AO5_RndMatrWorld, AO5_RndMatrView);
   loc = glGetUniformLocation(AO5_RndProg, "MatrWV");
   if (loc != -1)
@@ -136,6 +141,32 @@ VOID AO5_PrimDraw( ao5PRIM *Prim )
   loc = glGetUniformLocation(AO5_RndProg, "Time");
   if (loc != -1)
     glUniform1f(loc, AO5_Anim.Time);
+
+  /* Применение материала */
+  loc = glGetUniformLocation(AO5_RndProg, "Ka");
+  if (loc != -1)
+    glUniform3fv(loc, 1, &AO5_MtlLib[Prim->MtlNo].Ka.X);
+  loc = glGetUniformLocation(AO5_RndProg, "Kd");
+  if (loc != -1)
+    glUniform3fv(loc, 1, &AO5_MtlLib[Prim->MtlNo].Kd.X);
+  loc = glGetUniformLocation(AO5_RndProg, "Ks");
+  if (loc != -1)
+    glUniform3fv(loc, 1, &AO5_MtlLib[Prim->MtlNo].Ks.X);
+  loc = glGetUniformLocation(AO5_RndProg, "Kp");
+  if (loc != -1)
+    glUniform1f(loc, AO5_MtlLib[Prim->MtlNo].Kp);
+  loc = glGetUniformLocation(AO5_RndProg, "Kt");
+  if (loc != -1)
+    glUniform1f(loc, AO5_MtlLib[Prim->MtlNo].Kt);
+
+  loc = glGetUniformLocation(AO5_RndProg, "IsTextureUse");
+  if (AO5_MtlLib[Prim->MtlNo].TexId == 0)
+    glUniform1f(loc, 0);
+  else
+  {
+    glUniform1f(loc, 1);
+    glBindTexture(GL_TEXTURE_2D, AO5_MtlLib[Prim->MtlNo].TexId);
+  }
 
   glPrimitiveRestartIndex(0xFFFFFFFF);
   if (Prim->Type == AO5_PRIM_GRID)
@@ -150,7 +181,7 @@ VOID AO5_PrimDraw( ao5PRIM *Prim )
 /* Функция создания примитива плоскость.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  *   - касательные вектора-стороны:
  *       VEC Du, Dv;
  *   - разбиение:
@@ -165,7 +196,7 @@ BOOL AO5_PrimCreatePlane( ao5PRIM *Prim, VEC Du, VEC Dv, INT N, INT M )
 /* Функция создания примитива сфера.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  *   - центр сферы:
  *       VEC С;
  *   - радиус сферы:

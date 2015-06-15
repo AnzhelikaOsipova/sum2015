@@ -1,13 +1,13 @@
 /* FILENAME: ANIM.H
  * PROGRAMMER: AO5
  * PURPOSE: Animation system declaration module.
- * LAST UPDATE: 08.06.2015
+ * LAST UPDATE: 11.06.2015
  */
 
 #ifndef __ANIM_H_
 #define __ANIM_H_
 
-#include "def.h"
+#include "render.h"
 
 /* Максимальное количество элементов анимации */
 #define AO5_MAX_UNITS 3000
@@ -26,7 +26,7 @@ typedef struct
   /* Массив элементов анимации и их количество */
   ao5UNIT *Units[AO5_MAX_UNITS]; 
   INT NumOfUnits;
-  
+
   /* Подсистема синхронизации */
   DBL
     Time,            /* время в секундах со старта анимации */
@@ -36,6 +36,7 @@ typedef struct
     FPS;             /* количество кадров в секунду */
   BOOL
     IsPause;         /* флаг паузы */
+
   /* Подсистема ввода */
   BYTE
     Keys[256],       /* Сотояние клавиш клавиатуры и мыши */
@@ -51,12 +52,12 @@ typedef struct
     JButsClick[32],  /* Флаги однократного нажатия кнопок джойстика */
     JPOV;            /* Переключатель POV - 0..8 */
   DBL
-    JX, JY, JZ, JR, JU, JV; /* Оси джойстика (-1.0 .. 1.0)*/
-
+    JX, JY, JZ, JR, JU, JV; /* Оси джойстика (-1.0 .. 1.0*/
 } ao5ANIM;
+
 /* Системный контекст анимации */
 extern ao5ANIM AO5_Anim;
-extern INT AO5_MouseWheel;
+
 /* Базовые поля объекта анимации:
  * - размер структуры для наследования
  *     INT Size;
@@ -84,11 +85,15 @@ struct tagao5UNIT
   AO5_UNIT_BASE_FIELDS;
 };
 
+/* Глобальная переменная - счетчик прокрутки колеса мыши */
+extern INT AO5_MouseWheel;
+
 /* Функция инициализации анимации.
  * АРГУМЕНТЫ:
  *   - дескриптор окна:
  *       HWND hWnd;
- * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
+ * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
+ *   (BOOL) TRUE при успехе, иначе FALSE.
  */
 BOOL AO5_AnimInit( HWND hWnd );
 
@@ -121,7 +126,7 @@ VOID AO5_AnimCopyFrame( VOID );
 /* Функция добавления в систему объекта анимации.
  * АРГУМЕНТЫ:
  *   - добавляемый объект анимации:
- *       ao5UNIT *Unit;
+ *       AO5UNIT *Unit;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_AnimAddUnit( ao5UNIT *Unit );
@@ -138,7 +143,7 @@ VOID AO5_AnimFlipFullScreen( VOID );
  *   - размер структуры объекта анимации:
  *       INT Size;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
- *   (ao5UNIT *) указатель на созданный объект анимации.
+ *   (AO5UNIT *) указатель на созданный объект анимации.
  */
 ao5UNIT * AO5_AnimUnitCreate( INT Size );
 
@@ -155,7 +160,6 @@ VOID AO5_AnimDoExit( VOID );
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_AnimSetPause( BOOL NewPauseFlag );
-
 
 #endif /* __ANIM_H_ */
 

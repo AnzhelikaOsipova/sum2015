@@ -1,15 +1,16 @@
 /* FILE NAME: VEC.h
 *  PROGRAMMER: AO5
 *  DATE: 06.06.2015
-*  PURPOSE: Animation drawing*/
+*  PURPOSE: 3D math declaration module*/
 
-
-#ifndef _VEC_H_
-#define _VEC_H_
-
-#pragma warning(disable: 4244)
+#ifndef __VEC_H_
+#define __VEC_H_
 
 #include <math.h>
+#include <stdlib.h>
+
+#include"DEF.h"
+
 #define PI 3.14159265358979323846
 #define DEGREE2RADIANL 0.01745329251994329576L
 #define D2R(A) ((A) * PI / 180.0)
@@ -23,23 +24,26 @@
             {0, 0, 0, 1}   \
           }                \
         }            
-static long double MultiplierDegree2Radian = DEGREE2RADIANL;
 
-/* тип для вектора в простанстве */
+/* Множитель для преобразования градусов в радианы */
+extern LDBL AO5_MultiplierDegree2Radian;
+
+/* Тип для вектора в простанстве */
 typedef struct tagVEC
 {
   FLT X, Y, Z;
 } VEC;
 
-/* тип для матрицы - массив в структуре */
+/* Тип для матрицы - массив в структуре */
 typedef struct tagMATR
 {
   FLT A[4][4];
 } MATR;
 
+/* Тип представления цвета */
 typedef struct tagCOLOR
 {
-  FLT R, G, B, A; /* цвета + прозрачность (0..1) */
+  FLT R, G, B, A; /* компоненты цвета + прозрачность (0..1) */
 } COLOR;
 
 __inline FLT Rnd0( VOID )
@@ -72,7 +76,7 @@ __inline MATR MatrIdentity( VOID )
   };
 
   return M;
-}
+}/* End of 'MatrIdentity' function */
 
 __inline MATR MatrTranslate( FLT Dx, FLT Dy, FLT Dz )
 {
@@ -87,7 +91,7 @@ __inline MATR MatrTranslate( FLT Dx, FLT Dy, FLT Dz )
   };
 
   return M;
-}
+}/* End of 'MatrTranslate' function */
 
 __inline MATR MatrScale( FLT Sx, FLT Sy, FLT Sz )
 {
@@ -102,7 +106,7 @@ __inline MATR MatrScale( FLT Sx, FLT Sy, FLT Sz )
   };
 
   return M;
-}
+}/* End of 'MatrScale' function */
 
 __inline MATR MatrRotateX( FLT AngleDegree )
 {
@@ -118,7 +122,7 @@ __inline MATR MatrRotateX( FLT AngleDegree )
   };
 
   return M;
-}
+}/* End of 'MatrRotateX' function */
 
 __inline MATR MatrRotateY( FLT AngleDegree )
 {
@@ -134,7 +138,7 @@ __inline MATR MatrRotateY( FLT AngleDegree )
   };
 
   return M;
-}
+}/* End of 'MatrRotateY' function */
 
 __inline MATR MatrRotateZ( FLT AngleDegree )
 {
@@ -150,7 +154,7 @@ __inline MATR MatrRotateZ( FLT AngleDegree )
   };
 
   return M;
-}
+}/* End of 'MatrRotateZ' function */
 
 __inline MATR MatrRotate( FLT AngleDegree, FLT X, FLT Y, FLT Z )
 {
@@ -190,7 +194,7 @@ __inline MATR MatrRotate( FLT AngleDegree, FLT X, FLT Y, FLT Z )
   M.A[3][2] = 0;
   M.A[3][3] = 1;
   return M;
-}
+}/* End of 'MatrRotate' function */
 
 __inline MATR MatrMulMatr( MATR M1, MATR M2 )
 {
@@ -201,7 +205,7 @@ __inline MATR MatrMulMatr( MATR M1, MATR M2 )
       for (M.A[i][j] = 0, k = 0; k < 4; k++)
         M.A[i][j] += M1.A[i][k] * M2.A[k][j];
   return M;
-}
+}/* End of 'MatrMulMatr' function */
 
 __inline MATR MatrTranspose( MATR M )
 {
@@ -211,7 +215,7 @@ __inline MATR MatrTranspose( MATR M )
     for (j = 0; j < 4; j++)
       M2.A[i][j] = M.A[j][i];
   return M2;
-}
+}/* End of 'MatrTranspose' function */
 
 __inline FLT MatrDeterm3x3( FLT A11, FLT A12, FLT A13,
                    FLT A21, FLT A22, FLT A23,
@@ -219,7 +223,7 @@ __inline FLT MatrDeterm3x3( FLT A11, FLT A12, FLT A13,
 {
   return A11 * A22 * A33 + A12 * A23 * A31 + A13 * A21 * A32 +
         -A11 * A23 * A32 - A12 * A21 * A33 - A13 * A22 * A31;
-}
+}/* End of 'MatrDeterm3x3' function */
 
 __inline FLT MatrDeterm( MATR M )
 {
@@ -236,7 +240,7 @@ __inline FLT MatrDeterm( MATR M )
     M.A[0][3] * MatrDeterm3x3(M.A[1][0], M.A[1][1], M.A[1][2],
                               M.A[2][0], M.A[2][1], M.A[2][2],
                               M.A[3][0], M.A[3][1], M.A[3][2]);
-}
+}/* End of 'MatrDeterm' function */
 
 __inline MATR MatrInverse( MATR M )
 {
@@ -260,7 +264,7 @@ __inline MATR MatrInverse( MATR M )
                       M.A[p[i][2]][p[j][0]], M.A[p[i][2]][p[j][1]], M.A[p[i][2]][p[j][2]]) / det;
 
   return r;
-}
+}/* End of 'MatrInverse' function */
 
 /* Векторы */
 
@@ -268,56 +272,57 @@ __inline VEC VecSet( FLT X, FLT Y, FLT Z )
 {
   VEC r = {X, Y, Z};
   return r;
-}
+}/* End of 'VecSet' function */
 
 __inline VEC VecAddVec( VEC A, VEC B )
 {
   return VecSet(A.X + B.X, A.Y + B.Y, A.Z + B.Z);
-}
+}/* End of 'VecAddVec' function */
 
 __inline VEC VecSubVec( VEC A, VEC B )
 {
   return VecSet(A.X - B.X, A.Y - B.Y, A.Z - B.Z);
-}
+}/* End of 'VecSubVec' function */
 
 __inline VEC VecMulNum( VEC A, FLT N )
 {
   return VecSet(A.X * N, A.Y * N, A.Z * N);
-}
+}/* End of 'VecMulNum' function */
+
 __inline VEC VecDivNum( VEC A, FLT N )
 {
   return VecSet(A.X / N, A.Y / N, A.Z / N);
-}
+}/* End of 'VecDivNum' function */
 
 __inline VEC VecNeg( VEC A )
 {
   return VecSet(-A.X, -A.Y, -A.Z);
-}
+}/* End of 'VecNeg' function */
 
 __inline FLT VecDotVec( VEC A, VEC B )
 {
   return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
-}
+}/* End of 'VecDotVec' function */
 
 __inline VEC VecCrossVec( VEC A, VEC B )
 {
   return VecSet(A.Y * B.Z - A.Z * B.Y, A.Z * B.X - A.X * B.Z, A.X * B.Y - A.Y * B.X);
-}
+}/* End of 'VecCrossVec' function */
 
 __inline FLT VecLen2( VEC V )
 {
   return V.X * V.X + V.Y * V.Y + V.Z * V.Z;
-}
+}/* End of 'VecLen2' function */
 
 __inline FLT VecLen( VEC V )
 {
   return sqrt(V.X * V.X + V.Y * V.Y + V.Z * V.Z);
-}
+}/* End of 'VecLen' function */
 
 __inline VEC VecNormalize( VEC V )
 {
   return VecSet(V.X / VecLen(V), V.Y / VecLen(V), V.Z / VecLen(V));
-}
+}/* End of 'VecNormalize' function */
 
 __inline VEC PointTransform( VEC V, MATR M ) /* VecMulMatr */
 {
@@ -326,7 +331,8 @@ __inline VEC PointTransform( VEC V, MATR M ) /* VecMulMatr */
     (V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0]) / w,
     (V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1] + M.A[3][1]) / w,
     (V.X * M.A[0][2] + V.Y * M.A[1][2] + V.Z * M.A[2][2] + M.A[3][2]) / w);
-}
+}/* End of 'PointTransform' function */
+
 __inline VEC VectorTransform( VEC V, MATR M )
 {
   return VecSet(
@@ -334,14 +340,14 @@ __inline VEC VectorTransform( VEC V, MATR M )
     V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1],
     V.X * M.A[0][2] + V.Y * M.A[1][2] + V.Z * M.A[2][2]);
 
-}
+}/* End of 'VectorTransform' function */
 
 __inline VEC RotateZ( VEC V, FLT AngleDegree )
 {
   FLT sine, cosine, tmp;
   _asm{
     fld AngleDegree
-    fmul MultiplierDegree2Radian
+    fmul AO5_MultiplierDegree2Radian
     fsincos
     fstp cosine
     fstp sine
@@ -350,13 +356,14 @@ __inline VEC RotateZ( VEC V, FLT AngleDegree )
   V.Y = V.X * sine + V.Y * cosine;
   V.X = tmp;
   return V;
-}
+}/* End of 'RotateZ' function */
+
 __inline VEC RotateX( VEC V, FLT AngleDegree )
 {
   FLT sine, cosine, tmp;
   _asm{
     fld AngleDegree
-    fmul MultiplierDegree2Radian
+    fmul AO5_MultiplierDegree2Radian
     fsincos
     fstp cosine
     fstp sine
@@ -365,14 +372,14 @@ __inline VEC RotateX( VEC V, FLT AngleDegree )
   V.Y = V.Y * cosine - V.Z * sine;
   V.Z = tmp; 
   return V;
-}
+}/* End of 'RotateX' function */
 
 __inline VEC RotateY( VEC V, FLT AngleDegree )
 {
   FLT sine, cosine, tmp;
   _asm{
     fld AngleDegree
-    fmul MultiplierDegree2Radian
+    fmul AO5_MultiplierDegree2Radian
     fsincos
     fstp cosine
     fstp sine
@@ -381,7 +388,7 @@ __inline VEC RotateY( VEC V, FLT AngleDegree )
   V.X = V.X * cosine - V.Z * sine;
   V.Z = tmp; 
   return V;
-}
+}/* End of 'RotateY' function */
 
 __inline MATR MatrView(VEC Loc, VEC At, VEC Up1)
 {

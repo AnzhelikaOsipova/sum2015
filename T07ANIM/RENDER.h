@@ -1,7 +1,7 @@
 /* FILENAME: RENDER.H
  * PROGRAMMER: AO5
  * PURPOSE: Rendering system declaration module.
- * LAST UPDATE: 09.06.2015
+ * LAST UPDATE: 13.06.2015
  */
 
 #ifndef __RENDER_H_
@@ -17,8 +17,8 @@
 /* Матрицы */
 extern MATR
   AO5_RndMatrWorld,
+  AO5_RndMatrView,
   AO5_RndMatrProj,
-  AO5_RndMatrView;
   AO5_RndMatrWorldViewProj;
 
 /* Матрица изменения примитива при создании */
@@ -29,6 +29,7 @@ extern DBL
   AO5_RndWp, AO5_RndHp,    /* размеры обрасти проецирования */
   AO5_RndProjDist;         /* расстояние до плоскости проекции */
 
+/* Шейдер по умолчанию */
 extern UINT AO5_RndProg;
 
 /* Функция загрузки шейдеров для одной программы.
@@ -49,6 +50,59 @@ UINT AO5_ShaderLoad( CHAR *FileNamePrefix );
 VOID AO5_ShaderFree( UINT PrgId );
 
 /***
+ * Работа с материалами
+ ***/
+
+/* Тип задания материала поверхности */
+typedef struct tagao5MATERIAL
+{
+  /* Имя материала */
+  CHAR Name[300];
+
+  /* Коэффициенты отражения */
+  VEC Ka, Kd, Ks;
+  FLT Kp; /* Степень "бликовости" */
+
+  /* Коэффициент прозрачности */
+  FLT Kt;
+
+  /* Текстура поверхности */
+  INT TexId;
+} ao5MATERIAL;
+
+/* Глобальная таблица материалов */
+#define AO5_MATERIAL_MAX 300
+extern INT AO5_MtlLibSize;
+extern ao5MATERIAL AO5_MtlLib[AO5_MATERIAL_MAX];
+
+/* Функция добавления материала в библиотеку.
+ * АРГУМЕНТЫ:
+ *   - структура с памаметрами материала:
+ *       ao5MATERIAL *Mtl;
+ * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
+ *   (INT) порядковый номер добавленного материала (0 при ошибке).
+ */
+INT AO5_MtlAdd( ao5MATERIAL *Mtl );
+
+/* Функция поиска материала по имени.
+ * АРГУМЕНТЫ:
+ *   - имя материала:
+ *       CHAR *Name;
+ * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
+ *   (INT) порядковый номер найденного материала (0 при ошибке).
+ */
+INT AO5_MtlFind( CHAR *Name );
+
+/* Функция загрузки материала из файла (*.MTL).
+ * АРГУМЕНТЫ:
+ *   - имя файла материала:
+ *       CHAR *FileName;
+ * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
+ *   (INT) количество загруженных материалов.
+ */
+INT AO5_MtlLoad( CHAR *FileName );
+
+/***
  * Работа с примитивами
  ***/
 
@@ -66,7 +120,8 @@ typedef struct tagao5PRIM
   INT
     VA,          /* массив вершин */
     VBuf, IBuf,  /* буфера вершин и индексов */
-    NumOfI;      /* количество индексов для вывода примитива */
+    NumOfI,      /* количество индексов для вывода примитива */
+    MtlNo;       /* номер материала из библиотеки */
 } ao5PRIM;
 
 /* Тип хранения текстурных координат */
@@ -101,13 +156,13 @@ typedef struct tagao5VERTEX
 /* Функция создания примитива.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  *   - тип примитива (AO5_PRIM_***):
- *       AO5PRIM_TYPE Type;
+ *       ao5PRIM_TYPE Type;
  *   - количество вершин и индексов:
  *       INT NoofV, NoofI;
  *   - массив вершин:
- *       AO5VERTEX *Vertices;
+ *       ao5VERTEX *Vertices;
  *   - массив индексов:
  *       INT *Indices;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
@@ -118,7 +173,7 @@ VOID AO5_PrimCreate( ao5PRIM *Prim, ao5PRIM_TYPE Type,
 /* Функция удаления примитива.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_PrimFree( ao5PRIM *Prim );
@@ -126,7 +181,7 @@ VOID AO5_PrimFree( ao5PRIM *Prim );
 /* Функция отрисовки примитива.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_PrimDraw( ao5PRIM *Prim );
@@ -134,7 +189,7 @@ VOID AO5_PrimDraw( ao5PRIM *Prim );
 /* Функция создания примитива плоскость.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  *   - касательные вектора-стороны:
  *       VEC Du, Dv;
  *   - разбиение:
@@ -147,7 +202,7 @@ BOOL AO5_PrimCreatePlane( ao5PRIM *Prim, VEC Du, VEC Dv, INT N, INT M );
 /* Функция создания примитива сфера.
  * АРГУМЕНТЫ:
  *   - указатель на примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  *   - центр сферы:
  *       VEC С;
  *   - радиус сферы:
@@ -162,7 +217,7 @@ BOOL AO5_PrimCreateSphere( ao5PRIM *Prim, VEC C, FLT R, INT N, INT M );
 /* Функция загрузки геометрического объекта.
  * АРГУМЕНТЫ:
  *   - структура объекта для загрузки:
- *       AO5PRIM *GObj;
+ *       ao5PRIM *GObj;
  *   - имя файла:
  *       CHAR *FileName;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
@@ -184,9 +239,9 @@ typedef struct tagao5GEOM
 /* Функция добавления примитива к геометрическому объекту.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  *   - указатель на добавляемый примитив:
- *       AO5PRIM *Prim;
+ *       ao5PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (INT) номер добавленного примитива в массиве (-1 при ошибке).
  */
@@ -195,7 +250,7 @@ INT AO5_GeomAddPrim( ao5GEOM *G, ao5PRIM *Prim );
 /* Функция освобождения геометрического объекта.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_GeomFree( ao5GEOM *G );
@@ -203,7 +258,7 @@ VOID AO5_GeomFree( ao5GEOM *G );
 /* Функция отображения геометрического объекта.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
 VOID AO5_GeomDraw( ao5GEOM *G );
@@ -211,7 +266,7 @@ VOID AO5_GeomDraw( ao5GEOM *G );
 /* Функция загрузки геометрического объекта из G3D файла.
  * АРГУМЕНТЫ:
  *   - указатель на геометрический объект:
- *       AO5GEOM *G;
+ *       ao5GEOM *G;
  *   - имя файла:
  *       CHAR *FileName;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
@@ -227,7 +282,6 @@ BOOL AO5_GeomLoad( ao5GEOM *G, CHAR *FileName );
  *   (INT ) идентификатор OpenGL для текстуры.
  */
 INT AO5_TextureLoad( CHAR *FileName );
-
 
 #endif /* __RENDER_H_ */
 
