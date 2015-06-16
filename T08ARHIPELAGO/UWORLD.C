@@ -27,10 +27,15 @@ typedef struct tagao5UNIT_WORLD
  */
 static VOID AO5_AnimUnitInit( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
 {
+  AO5_MtlLib[1].TexId = AO5_TextureLoad("sky.bmp");
+  AO5_MtlLib[2].TexId = AO5_TextureLoad("water3.bmp");
   Uni->Sky.Prog = AO5_ShaderLoad("SKY");
   Uni->Water.Prog = AO5_ShaderLoad("WATER");
-  AO5_PrimCreatePlane(&Uni->Water, VecSet(-10, 0, 10), VecSet(0, 0, -20), VecSet(20, 0, 0), 10, 10);
+  //AO5_PrimCreatePlane(&Uni->Water, VecSet(-10, 0, 10), VecSet(0, 0, -20), VecSet(20, 0, 0), 10, 10);
+  AO5_PrimCreateHeightField(&Uni->Water, VecSet(-10, 0, 10), VecSet(0, 0, -20), VecSet(20, 0, 0), 1, "water10.bmp");
   AO5_PrimCreateSphere(&Uni->Sky, VecSet(0, 0, 0), 10, 100, 100);
+  Uni->Sky.MtlNo = 1;
+  Uni->Water.MtlNo = 2;
 } /* End of 'AO5_AnimUnitInit' function */
 
 /* Функция по-умолчанию деинициализации объекта анимации.

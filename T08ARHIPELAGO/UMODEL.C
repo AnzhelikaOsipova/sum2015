@@ -60,6 +60,9 @@ static VOID AO5_AnimUnitRender( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
   INT i;
   static FLT x = 1, y = 0, z = 0, pov = 0;
   static DBL time = 5;
+  AO5_RndMatrView = MatrView(VecSet(0, 30, 100),
+                             VecSet(0, 10, 0),
+                             VecSet(0, 1, 0));
   time += AO5_Anim.GlobalDeltaTime;
   if (time > 5)
     {
@@ -69,9 +72,6 @@ static VOID AO5_AnimUnitRender( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
       for(i = 0; i < Uni->Model.NumOfPrimitives; i++)
         Uni->Model.Prims[i].Prog = Uni->Model.Prog;
     }
-  AO5_RndMatrView = MatrView(VecSet(0, 30, 100),
-                             VecSet(0, 20, 0),
-                             VecSet(0, 1, 0));
   
   if (Ani->KeysClick['X'])
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -87,7 +87,7 @@ static VOID AO5_AnimUnitRender( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
   if (Ani->Keys['D'])
     pov -= 1;
   
-  AO5_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrTranslate(0, 0, z), MatrRotateY(pov)), MatrScale(0.1, 0.1, 0.1)); 
+  AO5_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrTranslate(0, -90, z), MatrRotateY(pov)), MatrScale(0.1, 0.1, 0.1)); 
   AO5_GeomDraw(&Uni->Model);
 
   glActiveTexture(GL_TEXTURE0);

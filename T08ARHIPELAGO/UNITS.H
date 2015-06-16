@@ -30,7 +30,7 @@ ao5UNIT * AO5_UnitModelCreate( VOID );
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (ao5UNIT *) указатель на созданный объект анимации.
  */
-ao5UNIT * AO5_UnitWorldCreate( IVOID );
+ao5UNIT * AO5_UnitWorldCreate( VOID );
 
 #endif /* __UNITS_H_ */
 
