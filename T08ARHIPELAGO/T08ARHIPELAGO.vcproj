@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="T07ANIM"
-	ProjectGUID="{AC967AE4-E3B3-401C-ADD9-DD59ACBF6127}"
-	RootNamespace="T07ANIM"
+	Name="T08ARHIPELAGO"
+	ProjectGUID="{0964A261-92E3-4BE2-9DD0-5FCB4B70BCC1}"
+	RootNamespace="T08ARHIPELAGO"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -179,75 +179,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\IMAGE.C"
-				>
-			</File>
-			<File
-				RelativePath=".\IMAGE.H"
-				>
-			</File>
-			<File
 				RelativePath=".\MAIN.c"
 				>
 			</File>
 			<Filter
-				Name="Animation"
-				>
-				<File
-					RelativePath=".\ANIM.c"
-					>
-				</File>
-				<File
-					RelativePath=".\ANIM.h"
-					>
-				</File>
-				<File
-					RelativePath=".\UNITS.c"
-					>
-				</File>
-				<File
-					RelativePath=".\UNITS.h"
-					>
-				</File>
-				<Filter
-					Name="Rendering"
-					>
-					<File
-						RelativePath=".\MTLLIB.C"
-						>
-					</File>
-					<File
-						RelativePath=".\RENDER.c"
-						>
-					</File>
-					<File
-						RelativePath=".\RENDER.h"
-						>
-					</File>
-					<Filter
-						Name="Geometry Helper"
-						>
-						<File
-							RelativePath=".\GEOM.C"
-							>
-						</File>
-						<File
-							RelativePath=".\PRIM.C"
-							>
-						</File>
-					</Filter>
-				</Filter>
-				<Filter
-					Name="Shaders"
-					>
-					<File
-						RelativePath=".\SHADERS.c"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="Support"
+				Name="3D Support"
 				>
 				<File
 					RelativePath=".\VEC.c"
@@ -259,22 +195,86 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Units"
+				Name="Animation"
 				>
 				<File
-					RelativePath=".\UBALL.c"
+					RelativePath=".\ANIM.C"
 					>
 				</File>
 				<File
-					RelativePath=".\UBALL2.c"
+					RelativePath=".\ANIM.H"
 					>
 				</File>
+				<File
+					RelativePath=".\MTLLIB.C"
+					>
+				</File>
+				<Filter
+					Name="Rendering"
+					>
+					<File
+						RelativePath=".\RENDER.c"
+						>
+					</File>
+					<File
+						RelativePath=".\RENDER.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Shaders"
+					>
+					<File
+						RelativePath=".\SHADERS.c"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Geometry"
+					>
+					<File
+						RelativePath=".\GEOM.C"
+						>
+					</File>
+					<File
+						RelativePath=".\PRIM.C"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Units"
+				>
 				<File
 					RelativePath=".\UCONTRL.C"
 					>
 				</File>
 				<File
 					RelativePath=".\UMODEL.C"
+					>
+				</File>
+				<File
+					RelativePath=".\UNIT.C"
+					>
+				</File>
+				<File
+					RelativePath=".\UNITS.H"
+					>
+				</File>
+				<File
+					RelativePath=".\UWORLD.C"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Image"
+				>
+				<File
+					RelativePath=".\IMAGE.C"
+					>
+				</File>
+				<File
+					RelativePath=".\IMAGE.H"
 					>
 				</File>
 			</Filter>
@@ -285,7 +285,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\DEF.h"
+				RelativePath=".\DEF.H"
 				>
 			</File>
 		</Filter>

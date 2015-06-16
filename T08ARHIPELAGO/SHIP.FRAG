@@ -44,14 +44,6 @@ vec4 Shade( vec3 P, vec3 N )
   N = faceforward(N, V, N);
   N = normalize(N);
 
-  /*
-  vec3
-    Ka = vec3(0, 0, 0),
-    Kd = vec3(0.6, 0.6, 0.6),
-    Ks = vec3(0.5, 0.5, 0.5);
-  float Kp = 1;
-  */
-
   // рассеянный (ambient)
   color = Ka;
 
@@ -74,7 +66,6 @@ vec4 Shade( vec3 P, vec3 N )
   float rl = dot(R, L); 
   if (rl > 0)
     color += Ks * pow(rl, Kp);
-  //return vec4(a, a, a, Kt);
   return vec4(0.6 * color, Kt * a);
 }
 

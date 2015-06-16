@@ -112,58 +112,58 @@ VOID AO5_PrimDraw( ao5PRIM *Prim )
 
   /* рисуем треугольники */
   glBindVertexArray(Prim->VA);
-  glUseProgram(AO5_RndProg);
+  glUseProgram(Prim->Prog);
 
-  loc = glGetUniformLocation(AO5_RndProg, "MatrWorld");
+  loc = glGetUniformLocation(Prim->Prog, "MatrWorld");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, AO5_RndMatrWorld.A[0]);
-  loc = glGetUniformLocation(AO5_RndProg, "MatrView");
+  loc = glGetUniformLocation(Prim->Prog, "MatrView");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, AO5_RndMatrView.A[0]);
-  loc = glGetUniformLocation(AO5_RndProg, "MatrProj");
+  loc = glGetUniformLocation(Prim->Prog, "MatrProj");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, AO5_RndMatrProj.A[0]);
-  loc = glGetUniformLocation(AO5_RndProg, "MatrWVP");
+  loc = glGetUniformLocation(Prim->Prog, "MatrWVP");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, AO5_RndMatrWorldViewProj.A[0]);
 
   M = MatrTranspose(MatrInverse(MatrMulMatr(AO5_RndMatrWorld, AO5_RndMatrView)));
-  loc = glGetUniformLocation(AO5_RndProg, "MatrWVInverse");
+  loc = glGetUniformLocation(Prim->Prog, "MatrWVInverse");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, M.A[0]);
 
   M = MatrTranspose(MatrInverse(AO5_RndMatrWorld));
-  loc = glGetUniformLocation(AO5_RndProg, "MatrWInverse");
+  loc = glGetUniformLocation(Prim->Prog, "MatrWInverse");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, M.A[0]);
 
   M = MatrMulMatr(AO5_RndMatrWorld, AO5_RndMatrView);
-  loc = glGetUniformLocation(AO5_RndProg, "MatrWV");
+  loc = glGetUniformLocation(Prim->Prog, "MatrWV");
   if (loc != -1)
     glUniformMatrix4fv(loc, 1, FALSE, M.A[0]);
 
-  loc = glGetUniformLocation(AO5_RndProg, "Time");
+  loc = glGetUniformLocation(Prim->Prog, "Time");
   if (loc != -1)
     glUniform1f(loc, AO5_Anim.Time);
 
   /* Применение материала */
-  loc = glGetUniformLocation(AO5_RndProg, "Ka");
+  loc = glGetUniformLocation(Prim->Prog, "Ka");
   if (loc != -1)
     glUniform3fv(loc, 1, &AO5_MtlLib[Prim->MtlNo].Ka.X);
-  loc = glGetUniformLocation(AO5_RndProg, "Kd");
+  loc = glGetUniformLocation(Prim->Prog, "Kd");
   if (loc != -1)
     glUniform3fv(loc, 1, &AO5_MtlLib[Prim->MtlNo].Kd.X);
-  loc = glGetUniformLocation(AO5_RndProg, "Ks");
+  loc = glGetUniformLocation(Prim->Prog, "Ks");
   if (loc != -1)
     glUniform3fv(loc, 1, &AO5_MtlLib[Prim->MtlNo].Ks.X);
-  loc = glGetUniformLocation(AO5_RndProg, "Kp");
+  loc = glGetUniformLocation(Prim->Prog, "Kp");
   if (loc != -1)
     glUniform1f(loc, AO5_MtlLib[Prim->MtlNo].Kp);
-  loc = glGetUniformLocation(AO5_RndProg, "Kt");
+  loc = glGetUniformLocation(Prim->Prog, "Kt");
   if (loc != -1)
     glUniform1f(loc, AO5_MtlLib[Prim->MtlNo].Kt);
 
-  loc = glGetUniformLocation(AO5_RndProg, "IsTextureUse");
+  loc = glGetUniformLocation(Prim->Prog, "IsTextureUse");
   if (AO5_MtlLib[Prim->MtlNo].TexId == 0)
     glUniform1f(loc, 0);
   else

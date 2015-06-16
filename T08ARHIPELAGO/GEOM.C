@@ -70,8 +70,8 @@ VOID AO5_GeomDraw( ao5GEOM *G )
   INT i, loc;
 
   /* посылаем количество частей */
-  glUseProgram(AO5_RndProg);
-  loc = glGetUniformLocation(AO5_RndProg, "TotalParts");
+  glUseProgram(G->Prog);
+  loc = glGetUniformLocation(G->Prog, "TotalParts");
   if (loc != -1)
     glUniform1f(loc, G->NumOfPrimitives);
   glUseProgram(0);
@@ -81,8 +81,8 @@ VOID AO5_GeomDraw( ao5GEOM *G )
     if (AO5_MtlLib[G->Prims[i].MtlNo].Kt == 1)
     {
       /* посылаем номер текущей части */
-      glUseProgram(AO5_RndProg);
-      loc = glGetUniformLocation(AO5_RndProg, "PartNo");
+      glUseProgram(G->Prog);
+      loc = glGetUniformLocation(G->Prog, "PartNo");
       if (loc != -1)
         glUniform1f(loc, i);
       glUseProgram(0);
@@ -93,8 +93,8 @@ VOID AO5_GeomDraw( ao5GEOM *G )
     if (AO5_MtlLib[G->Prims[i].MtlNo].Kt != 1)
     {
       /* посылаем номер текущей части */
-      glUseProgram(AO5_RndProg);
-      loc = glGetUniformLocation(AO5_RndProg, "PartNo");
+      glUseProgram(G->Prog);
+      loc = glGetUniformLocation(G->Prog, "PartNo");
       if (loc != -1)
         glUniform1f(loc, i);
       glUseProgram(0);
@@ -189,6 +189,8 @@ BOOL AO5_GeomLoad( ao5GEOM *G, CHAR *FileName )
 
     /* добавляем примитив к объекту */
     AO5_GeomAddPrim(G, &P);
+    /* объявляем шейдер для примитива */
+    G->Prims[i].Prog  = G->Prog;
   }
   fclose(F);
   AO5_RndPrimMatrConvert = MatrIdentity();
