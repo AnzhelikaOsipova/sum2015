@@ -5,6 +5,8 @@
  */
 
 #include "anim.h"
+#include "vec.h"
+
 
 /* “ип представлени€ м€ча */
 typedef struct tagao5UNIT_MODEL
@@ -58,11 +60,13 @@ static VOID AO5_AnimUnitClose( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
 static VOID AO5_AnimUnitRender( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
 {
   INT i;
-  static FLT x = 1, y = 0, z = 0, pov = 0;
+  static FLT x = 0, y = 0, z = 0;
+  static INT pov = 0, v = 0;
   static DBL time = 5;
-  AO5_RndMatrView = MatrView(VecSet(0, 30, 100),
-                             VecSet(0, 10, 0),
+  AO5_RndMatrView = MatrView(VecSet(x * 0.1, 30, 100 + z * 0.1),
+                             VecSet(x * 0.1, 10, z * 0.1),
                              VecSet(0, 1, 0));
+                                
   time += AO5_Anim.GlobalDeltaTime;
   if (time > 5)
     {
@@ -79,15 +83,22 @@ static VOID AO5_AnimUnitRender( ao5UNIT_MODEL *Uni, ao5ANIM *Ani )
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_DEPTH_TEST);
   if (Ani->Keys['W'])
-    z -= 1;
-  if (Ani->Keys['S'])
-    z += 1;
+    v = -5;
+  else if (Ani->Keys['S'])
+    v = 5;
+  else
+    v = 0;
   if (Ani->Keys['A'])
     pov += 1;
   if (Ani->Keys['D'])
     pov -= 1;
-  
-  AO5_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrTranslate(0, -90, z), MatrRotateY(pov)), MatrScale(0.1, 0.1, 0.1)); 
+  pov = pov % 360;
+  if(90 - pov != 90 && 90 - pov != -90 && 90 - pov != 270 && 90 - pov != -270)
+    x += cos(D2R(90 - pov)) * v;
+  if(90 - pov != 0 && 90 - pov != 180 && 90 - pov != -180)
+    z += sin(D2R(90 - pov)) * v;
+  //AO5_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrMulMatr(MatrTranslate(0, -90, z / 2), MatrRotateY(pov)), MatrTranslate(0, 0, z / 2)), MatrScale(0.1, 0.1, 0.1)); 
+  AO5_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrRotateY(pov), MatrTranslate( x, -90, z)), MatrScale(0.1, 0.1, 0.1)); 
   AO5_GeomDraw(&Uni->Model);
 
   glActiveTexture(GL_TEXTURE0);

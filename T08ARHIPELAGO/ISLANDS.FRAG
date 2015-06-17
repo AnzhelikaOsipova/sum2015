@@ -30,44 +30,39 @@ vec4 Shade( vec3 P, vec3 N )
 {
   float a = 1;
   vec3 color = vec3(0, 0, 0);
-  vec3 L = normalize(vec3(0.5, 6, 1));
+  vec3 L = normalize(vec3(1, 1, 1));
   vec3 V = -vec3(-MatrView[3][0], -MatrView[3][1], -MatrView[3][2]);
   V = normalize(V * vec3(MatrWVInverse * vec4(0, 0, 0, 1)) - L);
   N = faceforward(N, V, N);
   N = normalize(N);
 
-  vec3 nKa = vec3(0, 0, 1);
-  vec3 nKd = vec3(0.4, 0.4, 0.4);
-  vec3 nKs = vec3(0.6, 0.6, 0.6);
-  float nKp = 1000;
-  float nKt = 1;
-  color = nKa;
-   float nl = dot(N, L); 
+  color = Ka;
+
+  float nl = dot(N, L); 
   if (nl > 0)
   {
     if (IsTextureUse > 0)
     {
-      vec4 tc = texture2D(DrawTexture, DrawTexCoord);
+      vec4 tc = texture2D(DrawTexture, vec2(DrawPosition));// DrawTexCoord);
       a = tc.a;
-      color += nKd * tc.rgb * nl;
+      color += Kd * tc.rgb * nl;
     }
     else
-      color += nKd * nl;
+      color += Kd * nl;
   }
 
   vec3 R = reflect(V, N);
   float rl = dot(R, L); 
   if (rl > 0)
-    color += nKs * pow(rl, nKp);
-  return vec4(0.37 * color, nKt * a);
+    color += Ks * pow(rl, Kp);
+  return vec4(0.6 * color, Kt * a);
 }
 
 void main( void )
 {
-  vec4 tc = vec4 (0, 0.3, 1, 1);
+  vec4 tc = vec4 (1, 1, 1, 1);
   if (IsTextureUse > 0)
       tc = texture2D(DrawTexture, DrawTexCoord);
-  OutColor = DrawColor * Shade(DrawPosition.xyz, DrawNormal);
+  OutColor = DrawColor * tc;
 }
-
 

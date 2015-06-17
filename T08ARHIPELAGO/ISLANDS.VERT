@@ -24,9 +24,9 @@ out vec2 DrawTexCoord;
 
 void main( void )
 {
-  gl_Position = MatrWVP * vec4(InPosition * 60 + vec3(0, sin(InPosition.x * 10 + Time * 5), 0), 1);
-  DrawNormal = mat3(MatrWInverse) * InNormal - 0.1 * abs(cos(InPosition.x  * 4 + Time * 2));
-  DrawPosition = vec3(MatrWorld * vec4(InPosition, 1)) + abs(sin(Time) * 3);
-  DrawColor = InColor;
-  DrawTexCoord = InTexCoord + sin(Time);
+  gl_Position = MatrWVP * vec4(InPosition * 10 + vec3(0, -15, 0), 1);
+  DrawNormal = mat3(MatrWInverse) * InNormal;
+  DrawPosition = vec3(MatrWorld * vec4(InPosition, 1));
+  DrawColor = vec4(0.5, 1, 0.5, 1);
+  DrawTexCoord = InTexCoord;
 }

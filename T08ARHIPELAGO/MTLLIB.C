@@ -26,7 +26,7 @@ ao5MATERIAL AO5_MtlLib[AO5_MATERIAL_MAX] =
   },
   {
     /* Material #0 - материал по умолчанию */
-    "sky.bmp",
+    "sky2.bmp",
     {0.1, 0.1, 0.1}, /* Ka */
     {0.9, 0.9, 0.9}, /* Kd */
     {0.5, 0.5, 0.5}, /* Ks */

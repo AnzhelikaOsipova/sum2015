@@ -15,6 +15,7 @@ typedef struct tagao5UNIT_WORLD
 
   ao5PRIM Sky; /* Модель для отображения неба */
   ao5PRIM Water; /* Модель для отображения воды */
+  ao5PRIM Island; /* Модель для отображения острова */
   INT TextId;  /* Id текстуры */
 } ao5UNIT_WORLD;
 /* Функция по-умолчанию инициализации объекта анимации.
@@ -27,15 +28,17 @@ typedef struct tagao5UNIT_WORLD
  */
 static VOID AO5_AnimUnitInit( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
 {
-  AO5_MtlLib[1].TexId = AO5_TextureLoad("sky.bmp");
+  AO5_MtlLib[1].TexId = AO5_TextureLoad("sky2.bmp");
   AO5_MtlLib[2].TexId = AO5_TextureLoad("water3.bmp");
   Uni->Sky.Prog = AO5_ShaderLoad("SKY");
   Uni->Water.Prog = AO5_ShaderLoad("WATER");
-  //AO5_PrimCreatePlane(&Uni->Water, VecSet(-10, 0, 10), VecSet(0, 0, -20), VecSet(20, 0, 0), 10, 10);
+  Uni->Island.Prog = AO5_ShaderLoad("ISLANDS");
   AO5_PrimCreateHeightField(&Uni->Water, VecSet(-10, 0, 10), VecSet(0, 0, -20), VecSet(20, 0, 0), 1, "water10.bmp");
+  AO5_PrimCreateHeightField(&Uni->Island, VecSet(-10, 0, -10), VecSet(0, 0, -20), VecSet(20, 0, 0), -5, "HM.bmp");
   AO5_PrimCreateSphere(&Uni->Sky, VecSet(0, 0, 0), 10, 100, 100);
   Uni->Sky.MtlNo = 1;
   Uni->Water.MtlNo = 2;
+  Uni->Island.MtlNo = 0;
 } /* End of 'AO5_AnimUnitInit' function */
 
 /* Функция по-умолчанию деинициализации объекта анимации.
@@ -52,6 +55,8 @@ static VOID AO5_AnimUnitClose( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
   AO5_PrimFree(&Uni->Sky);
   AO5_ShaderFree(Uni->Water.Prog);
   AO5_PrimFree(&Uni->Water);
+  AO5_ShaderFree(Uni->Island.Prog);
+  AO5_PrimFree(&Uni->Island);
 } /* End of 'AO5_AnimUnitClose' function */
 
 /* Функция по-умолчанию обновления межкадровых параметров объекта анимации.
@@ -85,9 +90,12 @@ static VOID AO5_AnimUnitRender( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
       Uni->Sky.Prog = AO5_ShaderLoad("SKY");
       AO5_ShaderFree(Uni->Water.Prog);
       Uni->Water.Prog = AO5_ShaderLoad("WATER");
+      AO5_ShaderFree(Uni->Island.Prog);
+      Uni->Island.Prog = AO5_ShaderLoad("ISLANDS");
     }
   AO5_PrimDraw(&Uni->Sky);
   AO5_PrimDraw(&Uni->Water);
+  AO5_PrimDraw(&Uni->Island);
 } /* End of 'AO5_AnimUnitRender' function */
 
 /* Функция создания мира анимации.

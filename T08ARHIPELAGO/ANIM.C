@@ -267,7 +267,7 @@ VOID AO5_AnimRender( VOID )
     AO5_Anim.Units[i]->Response(AO5_Anim.Units[i], &AO5_Anim);
 
   /* очистка фона */
-  glClearColor(0.3, 0.5, 0.7, 1);
+  glClearColor(0, 0, 0, 1);
   glClearDepth(1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

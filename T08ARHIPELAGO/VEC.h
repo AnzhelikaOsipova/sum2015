@@ -395,7 +395,7 @@ __inline MATR MatrView(VEC Loc, VEC At, VEC Up1)
   VEC
     Dir = VecNormalize(VecSubVec(At, Loc)),
     Right = VecNormalize(VecCrossVec(Dir, Up1)),
-    Up = VecNormalize(VecCrossVec(Right, Dir));
+    Up = VecNormalize(VecCrossVec(Right, Dir)); 
   MATR m = 
   {
     {

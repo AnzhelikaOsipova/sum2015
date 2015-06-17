@@ -48,7 +48,9 @@ void main( void )
      PartNo == 214 || PartNo == 217 || PartNo == 220 || PartNo == 223 ||
      PartNo == 226 || PartNo == 229)
        DrawColor = vec4(0.6, 0.3, 0.3, 1); 
-  gl_Position = MatrWVP * vec4(InPosition * 7, 1);
+  gl_Position = MatrWVP * vec4(InPosition * 7 + vec3(sin(Time) * 3 + cos(Time) * 3, sin(Time) * 5, 0), 1);
+  if(PartNo == 189)
+    gl_Position = MatrWVP * vec4(InPosition * 7 + vec3(InPosition.x * 2 * sin(Time * 5) * 5 + sin(Time) * 3 + cos(Time) * 3, sin(Time) * 5, 0), 1);
   DrawNormal = mat3(MatrWInverse) * InNormal;
   DrawPosition = vec3(MatrWorld * vec4(InPosition, 1));
   DrawTexCoord = InTexCoord;
