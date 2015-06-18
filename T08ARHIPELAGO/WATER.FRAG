@@ -8,6 +8,7 @@ uniform float TotalParts;
 
 uniform mat4 MatrView;
 uniform mat4 MatrWVInverse;
+uniform mat4 MatrWorld;
 
 out vec4 OutColor;
 
@@ -33,13 +34,14 @@ vec4 Shade( vec3 P, vec3 N )
   vec3 L = normalize(vec3(0.5, 6, 1));
   vec3 V = -vec3(-MatrView[3][0], -MatrView[3][1], -MatrView[3][2]);
   V = normalize(V * vec3(MatrWVInverse * vec4(0, 0, 0, 1)) - L);
+  N = N * vec3(N.x - P.x, N.y - P.y, N.z - P.z);
   N = faceforward(N, V, N);
   N = normalize(N);
 
   vec3 nKa = vec3(0, 0, 1);
   vec3 nKd = vec3(0.4, 0.4, 0.4);
-  vec3 nKs = vec3(0.6, 0.6, 0.6);
-  float nKp = 1000;
+  vec3 nKs = vec3(0.3, 0.3, 0.3);
+  float nKp = 50;
   float nKt = 1;
   color = nKa;
    float nl = dot(N, L); 
@@ -64,9 +66,6 @@ vec4 Shade( vec3 P, vec3 N )
 
 void main( void )
 {
-  vec4 tc = vec4 (0, 0.3, 1, 1);
-  if (IsTextureUse > 0)
-      tc = texture2D(DrawTexture, DrawTexCoord);
   OutColor = DrawColor * Shade(DrawPosition.xyz, DrawNormal);
 }
 

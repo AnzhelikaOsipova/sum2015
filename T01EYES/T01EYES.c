@@ -176,10 +176,14 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
 
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
+    SelectObject(hDC, GetStockObject(NULL_PEN));
+    SelectObject(hDC, GetStockObject(DC_BRUSH));
+    SetDCBrushColor(hDC, RGB(255, 200, 30));
+    Rectangle(hDC, 0, 0, w + 1, h + 1);
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
     DrawEye(hDC, 200, 200, pt.x, pt.y, 100, 100);
-	DrawEye(hDC, 200, 200, pt.x, pt.y, w - 300, 100);
+    DrawEye(hDC, 200, 200, pt.x, pt.y, w - 300, 100);
     /*
     Ellipse(hDC, 10, 10, w - 10, h - 10);
     Ellipse(hDC, 10 + x, h / 2 - 10, x - 10, h / 2 + 10);

@@ -60,9 +60,20 @@ vec4 Shade( vec3 P, vec3 N )
 
 void main( void )
 {
+  vec4 pos = MatrView * vec4(DrawPosition, 1);
+  vec4 fog = vec4(0.3, 0.4, 0.8, 1);
+  float d = -pos.z, start = 30, end = 1500, f;
+  if(d < start)
+    f = 1;
+  else if(d > end)
+    f = 0;
+  else
+    f = (d - end) / (start - end);
+  
   vec4 tc = vec4 (1, 1, 1, 1);
   if (IsTextureUse > 0)
       tc = texture2D(DrawTexture, DrawTexCoord);
   OutColor = DrawColor * tc;
+  OutColor = OutColor * f + fog * (1 - f);
 }
 

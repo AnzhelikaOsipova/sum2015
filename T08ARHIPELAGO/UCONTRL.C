@@ -13,6 +13,8 @@ typedef struct tagao5UNIT_CTRL
 {
   AO5_UNIT_BASE_FIELDS;
   HFONT hFnt; /* Шрифт для вывода FPS */
+  VEC CPos, Pos, At;
+  FLT Head, Omega, V;
 } ao5UNIT_CTRL;
 
 /* Функция инициализации объекта анимации.
@@ -29,6 +31,12 @@ static VOID AO5_AnimUnitInit( ao5UNIT_CTRL *Uni, ao5ANIM *Ani )
     FALSE, RUSSIAN_CHARSET, OUT_DEFAULT_PRECIS,
     CLIP_DEFAULT_PRECIS, PROOF_QUALITY,
     VARIABLE_PITCH, "Bookman Old Style");
+  /* начальные параметры корабля */
+  Uni->Pos = VecSet(0, 0, 0);
+  Uni->CPos = VecSet(100, 30, 100);
+  Uni->V = 0;
+  Uni->Head = 0;
+  Uni->Omega = 0;
 } /* End of 'AO5_AnimUnitInit' function */
 
 /* Функция деинициализации объекта анимации.
@@ -54,12 +62,42 @@ static VOID AO5_AnimUnitClose( ao5UNIT_CTRL *Uni, ao5ANIM *Ani )
  */
 static VOID AO5_AnimUnitResponse( ao5UNIT_CTRL *Uni, ao5ANIM *Ani )
 {
+  VEC Move, Dir, At;
   if (Ani->Keys[VK_ESCAPE])
     AO5_AnimDoExit();
   if (Ani->KeysClick['F'])
     AO5_AnimFlipFullScreen();
   if (Ani->KeysClick['P'])
     AO5_AnimSetPause(!Ani->IsPause);
+  /* позиционирование корабля */
+  //Uni->Omega = -3000 * Ani->JX * Ani->DeltaTime;
+  //Uni->Head += -3 * 30 * Ani->JR * Ani->DeltaTime;
+  Dir = VectorTransform(VecSet(0, 0, 1), MatrRotateY(Uni->Head));
+  //Uni->V += -3 * Ani->JY * Ani->DeltaTime;
+  //Uni->V *= max(1 - Ani->GlobalDeltaTime, 0);
+  if(Ani->Keys['D'])
+    Uni->Head -= 1;
+  if(Ani->Keys['A'])
+    Uni->Head += 1;
+  if(Ani->Keys['W'])
+    Uni->V = -5;
+  else if(Ani->Keys['S'])
+    Uni->V = 5;
+  else
+    Uni->V = 0;
+  Uni->Pos = VecAddVec(Uni->Pos, VecMulNum(Dir, Uni->V * Ani->DeltaTime)); 
+
+  Uni->Pos = VecAddVec(Uni->Pos, VecMulNum(VectorTransform(Dir, MatrRotateY(-90)), Uni->V));
+  //Uni->Pos.Y += 30 * (Ani->JButs[1] - Ani->JButs[2]) * Ani->DeltaTime; 
+
+  Uni->At = VecSubVec(Uni->Pos, VecMulNum(Dir, 100));
+  Uni->At.Y += 10;
+  Move = VecSubVec(Uni->At, Uni->CPos);
+  Uni->CPos = VecAddVec(Uni->CPos, VecMulNum(Move, Ani->DeltaTime));
+  AO5_RndMatrView = MatrView(Uni->CPos,
+                             Uni->Pos,
+                             VecSet(0, 1, 0)); 
+  AO5_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrRotateY(Uni->Head), MatrTranslate(Uni->Pos.X, Uni->Pos.Y, Uni->Pos.Z)), MatrScale(0.1, 0.1, 0.1)); 
 } /* End of 'AO5_AnimUnitResponse' function */
 
 /* Функция построения объекта анимации.

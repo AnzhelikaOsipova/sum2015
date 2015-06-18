@@ -11,7 +11,7 @@
 #include "render.h"
 
 /* Глобальная таблица материалов */
-INT AO5_MtlLibSize = 2;
+INT AO5_MtlLibSize = 5;
 ao5MATERIAL AO5_MtlLib[AO5_MATERIAL_MAX] =
 {
   {
@@ -25,8 +25,8 @@ ao5MATERIAL AO5_MtlLib[AO5_MATERIAL_MAX] =
     0                /* Texture id */
   },
   {
-    /* Material #0 - материал по умолчанию */
-    "sky2.bmp",
+    /* Material #1 - материал неба */
+    "sky.bmp",
     {0.1, 0.1, 0.1}, /* Ka */
     {0.9, 0.9, 0.9}, /* Kd */
     {0.5, 0.5, 0.5}, /* Ks */
@@ -35,8 +35,28 @@ ao5MATERIAL AO5_MtlLib[AO5_MATERIAL_MAX] =
     0             /* Texture id */
   },
   {
-    /* Material #0 - материал по умолчанию */
+    /* Material #2 - материал воды */
     "water3.bmp",
+    {0.1, 0.1, 0.1}, /* Ka */
+    {0.9, 0.9, 0.9}, /* Kd */
+    {0.5, 0.5, 0.5}, /* Ks */
+    30.0,            /* Kp */
+    1.0,             /* Kt */
+    0             /* Texture id */
+  },
+  {
+    /* Material #3 - материал каммня */
+    "TEX1.bmp",
+    {0.1, 0.1, 0.1}, /* Ka */
+    {0.9, 0.9, 0.9}, /* Kd */
+    {0.5, 0.5, 0.5}, /* Ks */
+    30.0,            /* Kp */
+    1.0,             /* Kt */
+    0             /* Texture id */
+  },
+  {
+    /* Material #4 - материал травы */
+    "grass.bmp",
     {0.1, 0.1, 0.1}, /* Ka */
     {0.9, 0.9, 0.9}, /* Kd */
     {0.5, 0.5, 0.5}, /* Ks */

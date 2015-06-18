@@ -152,7 +152,7 @@ VOID AO5_AnimResize( INT W, INT H )
 
   AO5_RndMatrProj = MatrFrustum(-AO5_RndWp / 2, AO5_RndWp / 2,
                                 -AO5_RndHp / 2, AO5_RndHp / 2,
-                                AO5_RndProjDist, 800);
+                                AO5_RndProjDist, 100000);
 
 } /* End of 'AO5_AnimResize' function */
 
@@ -223,14 +223,14 @@ VOID AO5_AnimRender( VOID )
     JOYCAPS jc;
 
     /* получение общей информации о джостике */
-    if (joyGetDevCaps(JOYSTICKID2, &jc, sizeof(jc)) == JOYERR_NOERROR)
+    if (joyGetDevCaps(JOYSTICKID1, &jc, sizeof(jc)) == JOYERR_NOERROR)
     {
       JOYINFOEX ji;
 
       /* получение текущего состояния */
       ji.dwSize = sizeof(JOYCAPS);
       ji.dwFlags = JOY_RETURNALL;
-      if (joyGetPosEx(JOYSTICKID2, &ji) == JOYERR_NOERROR)
+      if (joyGetPosEx(JOYSTICKID1, &ji) == JOYERR_NOERROR)
       {
         /* Кнопки */
         memcpy(AO5_Anim.JButsOld, AO5_Anim.JButs, sizeof(AO5_Anim.JButs));

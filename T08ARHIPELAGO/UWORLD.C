@@ -15,7 +15,8 @@ typedef struct tagao5UNIT_WORLD
 
   ao5PRIM Sky; /* Модель для отображения неба */
   ao5PRIM Water; /* Модель для отображения воды */
-  ao5PRIM Island; /* Модель для отображения острова */
+  ao5PRIM Island[2]; /* Модель для отображения острова */
+  INT NumOfIsl;         
   INT TextId;  /* Id текстуры */
 } ao5UNIT_WORLD;
 /* Функция по-умолчанию инициализации объекта анимации.
@@ -28,17 +29,25 @@ typedef struct tagao5UNIT_WORLD
  */
 static VOID AO5_AnimUnitInit( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
 {
-  AO5_MtlLib[1].TexId = AO5_TextureLoad("sky2.bmp");
+  INT i;
+  Uni->NumOfIsl = 2;
+  AO5_MtlLib[1].TexId = AO5_TextureLoad("sky.bmp");
   AO5_MtlLib[2].TexId = AO5_TextureLoad("water3.bmp");
+  AO5_MtlLib[3].TexId = AO5_TextureLoad("TEX1.bmp");
+  AO5_MtlLib[4].TexId = AO5_TextureLoad("grass.bmp");
   Uni->Sky.Prog = AO5_ShaderLoad("SKY");
   Uni->Water.Prog = AO5_ShaderLoad("WATER");
-  Uni->Island.Prog = AO5_ShaderLoad("ISLANDS");
-  AO5_PrimCreateHeightField(&Uni->Water, VecSet(-10, 0, 10), VecSet(0, 0, -20), VecSet(20, 0, 0), 1, "water10.bmp");
-  AO5_PrimCreateHeightField(&Uni->Island, VecSet(-10, 0, -10), VecSet(0, 0, -20), VecSet(20, 0, 0), -5, "HM.bmp");
-  AO5_PrimCreateSphere(&Uni->Sky, VecSet(0, 0, 0), 10, 100, 100);
+  Uni->Island[0].Prog = AO5_ShaderLoad("ISLANDS");
+  for(i = 1; i < Uni->NumOfIsl; i++)
+    Uni->Island[i].Prog = Uni->Island[0].Prog;
+  AO5_PrimCreateHeightField(&Uni->Water, VecSet(-50, 0, 50), VecSet(0, 0, -100), VecSet(100, 0, 0), 1, "water10.bmp");
+  AO5_PrimCreateHeightField(&Uni->Island[0], VecSet(-20, 0, -20), VecSet(0, 0, -40), VecSet(40, 0, 0), -15, "NHM1C.bmp");
+  AO5_PrimCreateHeightField(&Uni->Island[1], VecSet(10, 0.2, 20), VecSet(0, 0, -50), VecSet(50, 0, 0), -5, "NHM5C.bmp");
+  AO5_PrimCreateSphere(&Uni->Sky, VecSet(0, 0, 0), 500, 30, 30);
   Uni->Sky.MtlNo = 1;
   Uni->Water.MtlNo = 2;
-  Uni->Island.MtlNo = 0;
+  Uni->Island[0].MtlNo = 3;
+  Uni->Island[1].MtlNo = 4;
 } /* End of 'AO5_AnimUnitInit' function */
 
 /* Функция по-умолчанию деинициализации объекта анимации.
@@ -51,12 +60,14 @@ static VOID AO5_AnimUnitInit( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
  */
 static VOID AO5_AnimUnitClose( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
 {
+  INT i;
   AO5_ShaderFree(Uni->Sky.Prog);
   AO5_PrimFree(&Uni->Sky);
   AO5_ShaderFree(Uni->Water.Prog);
   AO5_PrimFree(&Uni->Water);
-  AO5_ShaderFree(Uni->Island.Prog);
-  AO5_PrimFree(&Uni->Island);
+  AO5_ShaderFree(Uni->Island[0].Prog);
+  for(i = 0; i < Uni->NumOfIsl; i++)
+    AO5_PrimFree(&Uni->Island[i]);
 } /* End of 'AO5_AnimUnitClose' function */
 
 /* Функция по-умолчанию обновления межкадровых параметров объекта анимации.
@@ -81,6 +92,7 @@ static VOID AO5_AnimUnitResponse( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
  */
 static VOID AO5_AnimUnitRender( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
 {
+  INT i;
   static DBL time = 5;
   time += AO5_Anim.GlobalDeltaTime;
   if (time > 5)
@@ -90,12 +102,15 @@ static VOID AO5_AnimUnitRender( ao5UNIT_WORLD *Uni, ao5ANIM *Ani )
       Uni->Sky.Prog = AO5_ShaderLoad("SKY");
       AO5_ShaderFree(Uni->Water.Prog);
       Uni->Water.Prog = AO5_ShaderLoad("WATER");
-      AO5_ShaderFree(Uni->Island.Prog);
-      Uni->Island.Prog = AO5_ShaderLoad("ISLANDS");
+      AO5_ShaderFree(Uni->Island[0].Prog);
+      Uni->Island[0].Prog = AO5_ShaderLoad("ISLANDS");
+      for(i = 0; i < Uni->NumOfIsl; i++) 
+        Uni->Island[i].Prog = Uni->Island[0].Prog;
     }
   AO5_PrimDraw(&Uni->Sky);
   AO5_PrimDraw(&Uni->Water);
-  AO5_PrimDraw(&Uni->Island);
+  for(i = 0; i < Uni->NumOfIsl; i++) 
+    AO5_PrimDraw(&Uni->Island[i]);
 } /* End of 'AO5_AnimUnitRender' function */
 
 /* Функция создания мира анимации.
